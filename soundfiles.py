@@ -83,6 +83,9 @@ class Signal():
         self.samplerate = samplerate
         self.filename = ""
 
+    def get_samples(self):
+        return self.samples
+
     def get_samplerate(self):
         return self.samplerate
         
