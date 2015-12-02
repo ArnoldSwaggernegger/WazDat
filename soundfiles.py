@@ -82,7 +82,7 @@ class Signal():
         return self.samplerate
         
     def get_duration(self):
-        return self.samplerate * len(self.samples)
+        return len(self.samples) / self.samplerate
      
     def get_filename(self):
         return self.filename
