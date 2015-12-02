@@ -7,9 +7,6 @@ def get_fingerprints(signal):
     get spectrogram peaks as (time, frequency) points
     '''
 
-def get_keypoints(spectogram):
-
-
 def get_spectogram(signal, window_size):
     result = []
     samples = signal.get_samples()
@@ -23,6 +20,11 @@ def get_spectogram(signal, window_size):
         )
         result.append((frequencies, np.abs(spectrum)))
     return result
+
+def get_peaks():
+    '''
+    '''
+    pass
 
 
 def zero_padded_window(size):
