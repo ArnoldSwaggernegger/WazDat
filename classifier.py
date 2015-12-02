@@ -1,14 +1,17 @@
+""" The classifier uses a hashtable based on fingerprint hashes. 
+
+    For each possible matched file, check whether the time points between the
+    hashes are more or less the same.
+"""
+
+
 class Token:
 
     def __init__(self, fingerprint, time, filename):
         self.fingerprint = fingerprint
         self.time = time
         self.filename = filename
-        
 
-""" The classifier uses a hashtable based on fingerprint hashes. The filename 
-    and time point are used to match the song using multiple similar hashes. 
-"""
 
 class Classifier:
 
