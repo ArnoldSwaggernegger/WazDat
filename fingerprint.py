@@ -10,15 +10,16 @@ def get_fingerprints(signal, window_size=8000):
     samples = signal.get_samples()
 
     for i in range(0, len(samples), window_size):
-        window = zero_padded_window(window_size)
-        partial_signal = window * samples[i:i + window_size]
+        r = min(len(samples), i + window_size)
+        window = zero_padded_window(r - i)
+        partial_signal = window * samples[i:r]
         spectrum = np.fft.rfft(partial_signal)
         frequencies = np.fft.rfftfreq(
             len(partial_signal), 1.0 / signal.get_samplerate()
         )
 
-        # plt.plot(frequencies, np.abs(spectrum))
-        # plt.show()
+        plt.plot(frequencies, np.abs(spectrum))
+        plt.show()
 
 
 def zero_padded_window(size):
