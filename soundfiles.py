@@ -57,7 +57,7 @@ def load_wav(filename):
 
     normalized_samples = combined_samples / maxvalue
     
-    return Signal(normalized_samples, framerate)
+    return Signal(normalized_samples, framerate, filename)
 
     
 def load_mp3(filename):  
@@ -70,10 +70,10 @@ def load_ogg(filename):
 
 class Signal():
     
-    def __init__(self, samples, samplerate):
+    def __init__(self, samples, samplerate, filename):
         self.samples = samples
         self.samplerate = samplerate
-        self.filename = ""
+        self.filename = filename
 
     def get_samples(self):
         return self.samples
@@ -92,10 +92,3 @@ class Signal():
         
     def __len__(self):
         return len(self.samples)
-        
-if __name__ == "__main__":
-
-    signal = load_wav("test/muziek.wav")
-    
-    print signal.samplerate
-    print signal.samples
