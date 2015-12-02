@@ -18,8 +18,13 @@ def get_fingerprints(signal, window_size=8000):
             len(partial_signal), 1.0 / signal.get_samplerate()
         )
 
-        plt.plot(frequencies, np.abs(spectrum))
-        plt.show()
+        get_peaks()
+
+
+def get_peaks():
+    '''
+    '''
+    pass
 
 
 def zero_padded_window(size):
