@@ -1,38 +1,87 @@
 """
     This class provides a wrapper around signals from sound files. We cannot
-    work well with just ndarrays as sound signals. 
+    work well with just ndarrays as sound signals, as the time at which the
+    peak occur are related to the samplerate.
 """
 
 
 from glob import glob
+from wave import open
+import numpy as np
 
 
-""" Returns all matching filenames. 
-    Example: expression = "data/*" find all files inside the folder data. """
 def find_files(expression):
+    """ Returns all matching filenames. 
+    Example: expression = "data/*" find all files inside the folder data. """
     return glob(expression)
 
 
-""" Load a file as an array of samples. """
 def load_signal(filename):
+    """ Load a file as an array of samples. """
     
-    # load signal as numpy-ndarray
-    # for multiple filetypes (mp3, wav etc) 
+    if ".wav" in filename:
+        return load_wav(filename)
     
-    # create Signal object   
-
+    if ".mp3" in filename:
+        return load_mp3(filename)
+        
+    if ".ogg" in filename:
+        return load_ogg(filename)
+               
     return None
+
+
+def absmax(arrayA, arrayB):
+    result = np.zeros((len(arrayA)))
+    
+    for i in xrange(len(arrayA)):
+        if np.abs(arrayA[i]) > np.abs(arrayB[i]):
+            result[i] = arrayA[i]
+        else:
+            result[i] = arrayB[i]       
+    return result
+    
+    
+def load_wav(filename):    
+    f = open(filename, "r")
+    
+    nchannels, samplewidth, framerate, nframes, comptype, compname = f.getparams()
+    frames = f.readframes(nframes)
+    f.close()
+        
+    if samplewidth == 2:
+        dtype = np.int16
+        maxvalue = 2 ** (16 - 1)
+    if samplewidth == 4:
+        dtype = np.int32
+        maxvalue = 2 ** (32 - 1)
+    
+    all_samples = np.fromstring(frames, dtype)
+    
+    combined_samples = np.zeros((nframes, 1))
+    
+    for i in xrange(nchannels):
+        combined_samples = absmax(combined_samples, all_samples[i::nchannels])
+
+    normalized_samples = combined_samples / maxvalue
+    
+    return Signal(normalized_samples, framerate)
+
+    
+def load_mp3(filename):  
+    pass
+    
+
+def load_ogg(filename):
+    pass
 
 
 class Signal():
     
-    filename = ""
-    
     def __init__(self, samples, samplerate):
         self.samples = samples
         self.samplerate = samplerate
-
-    """ Getters. """
+        self.filename = ""
 
     def get_samplerate(self):
         return self.samplerate
@@ -42,14 +91,16 @@ class Signal():
      
     def get_filename(self):
         return self.filename
-     
-    def set_filename(self, filename):
-        self.filename = filename
-     
-    """ Implement some basic array operators. """
         
     def __getitem__(self, index):
         return self.samples[index]
         
     def __len__(self):
         return len(self.samples)
+        
+if __name__ == "__main__":
+
+    signal = load_wav("test/muziek.wav")
+    
+    print signal.samplerate
+    print signal.samples
