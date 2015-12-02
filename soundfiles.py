@@ -29,17 +29,6 @@ def load_signal(filename):
         return load_ogg(filename)
                
     return None
-
-
-def absmax(arrayA, arrayB):
-    result = np.zeros((len(arrayA)))
-    
-    for i in xrange(len(arrayA)):
-        if np.abs(arrayA[i]) > np.abs(arrayB[i]):
-            result[i] = arrayA[i]
-        else:
-            result[i] = arrayB[i]       
-    return result
     
     
 def load_wav(filename):    
@@ -58,10 +47,13 @@ def load_wav(filename):
     
     all_samples = np.fromstring(frames, dtype)
     
-    combined_samples = np.zeros((nframes, 1))
+    combined_samples = np.zeros(nframes)
     
-    for i in xrange(nchannels):
-        combined_samples = absmax(combined_samples, all_samples[i::nchannels])
+    for i in xrange(nchannels):    
+        a = combined_samples
+        b = all_samples[i::nchannels]
+        condition = np.less(np.abs(a), np.abs(b))
+        combined_samples = np.choose(condition, [a, b])
 
     normalized_samples = combined_samples / maxvalue
     
