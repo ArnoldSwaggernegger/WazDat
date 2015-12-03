@@ -8,7 +8,7 @@
 from glob import glob
 from wave import open
 import numpy as np
-
+from scikits.samplerate import resample
 
 def find_files(expression):
     """ Returns all matching filenames. 
@@ -62,8 +62,10 @@ def load_wav(filename):
         combined_samples = np.choose(condition, [a, b])
 
     normalized_samples = combined_samples / maxvalue
-    
-    return Signal(normalized_samples, framerate, filename)
+
+    desired_framerate = 8000.
+    resampled_samples = resample(normalized_samples, framerate/desired_framerate, 'sinc_best')
+    return Signal(resampled_samples, desired_framerate, filename)
 
     
 def load_mp3(filename):  
