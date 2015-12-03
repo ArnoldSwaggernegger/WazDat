@@ -1,8 +1,8 @@
-"""
+'''
 The classifier uses a hashtable based on fingerprint hashes.
 For each possible matched file, check whether the time points between the
 hashes are more or less the same.
-"""
+'''
 
 
 from random import random
@@ -10,8 +10,10 @@ import numpy as np
 
 
 def similar(a, b):
-    """ This function returns whether two tokens a and b have similar 
-        fingerprint. """
+    ''' 
+    This function returns whether two tokens a and b have similar 
+    fingerprint.
+    '''
     # TODO not made for sound fingerprints
     if -0.1 <= a.fingerprint - b.fingerprint <= 0.1:
         return True
@@ -19,9 +21,11 @@ def similar(a, b):
 
 
 def sort_per_filename(matches):
-    """ This function sorts a list of tokens into a dictionary using the token
-        filenames as keys and a list of the tokens from that filenames as 
-        values. """ 
+    ''' 
+    This function sorts a list of tokens into a dictionary using the token
+    filenames as keys and a list of the tokens from that filenames as 
+    values. 
+    ''' 
     d = {}
     for match in matches:
         a, b = match
@@ -34,10 +38,12 @@ def sort_per_filename(matches):
 
 class Token:
 
-    """ The Token class is used to create token objects for the classifier.
-        Each token contains the sound fingerprint, the corresponding time
-        and the filename of the original file. """
-
+    ''' 
+    The Token class is used to create token objects for the classifier.
+    Each token contains the sound fingerprint, the corresponding time
+    and the filename of the original file.
+    '''
+    
     def __init__(self, fingerprint, time, filename):
         self.fingerprint = fingerprint
         self.time = time
@@ -57,12 +63,14 @@ class Classifier:
         
     def classify(self, tokens):
     
-        """ This function classifies a sound using the collected tokens.
-            The input tokens should all belong to the same file. """
+        ''' 
+        This function classifies a sound using the collected tokens.
+        The input tokens should all belong to the same file.
+        '''
         
         matches = []
              
-        """ Find all matches between input tokens and database tokens. """
+        ''' Find all matches between input tokens and database tokens. '''
         # TODO: this part can be sped up using a hashtable-like ordening of
         # the collected tokens 
              
@@ -71,12 +79,12 @@ class Classifier:
                 if similar(a, b):
                     matches.append((a, b))
              
-        """ Sort all found matches based on original file. """
+        ''' Sort all found matches based on original file. '''
         file_matches = sort_per_filename(matches)
              
-        """ Check each possible file match. If the candidate has a match for at 
+        ''' Check each possible file match. If the candidate has a match for at 
             least 50% of the input tokens around the same time interval, it
-            is very likely the correct match. """
+            is very likely the correct match. '''
              
         for filename, matches in file_matches.iteritems():
         
