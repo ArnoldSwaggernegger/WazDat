@@ -47,14 +47,13 @@ def show_spectogram(spectogram, time):
     frequencies0, _ = spectogram[0]
     width = len(spectogram)
     height = len(frequencies0)
-    print width, height
 
     image = np.empty((width, height))
     for x in xrange(width):
         _, spectrum = spectogram[x]
         image[x] = spectrum
 
-    plt.imshow(image.T, cmap=plt.cm.Reds, aspect="auto", extent=[0, time, frequencies0[0], frequencies0[-1]])
+    plt.imshow(image.T, aspect="auto", extent=[0, time, frequencies0[0], frequencies0[-1]])
     ax = plt.gca()
     ax.set_xlabel("Time")
     ax.set_ylabel("Frequencies")
@@ -62,7 +61,7 @@ def show_spectogram(spectogram, time):
 
 if __name__ == "__main__":
     import soundfiles
-    signal = soundfiles.load_wav("test/muziek.wav")
+    signal = soundfiles.load_wav("audio/ijsvogel.wav")
     spectogram = get_spectogram(signal, 800)
     """for sample in spectogram[:3]:
         (freqs, spectrum) = sample
