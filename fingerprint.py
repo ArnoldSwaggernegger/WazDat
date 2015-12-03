@@ -1,18 +1,21 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import argrelextrema
+from scipy.io.wavfile import read
 
 
-def get_fingerprints(signal, window_size):
+def get_fingerprints(signal, window_size, bin_size):
     '''
     get spectrogram peaks as (time, frequency) points
     '''
 
     result = []
-    time_samples = get_spectogram(signal, window_size)
+    time_samples = get_spectogram(signal, window_size, bin_size)
 
-    for time, frequencies, spectrum in time_samples:
-        result.append((time, get_peaks(frequencies, spectrum)))
+    print time_samples
+    for time, histogram in enumerate(time_samples):
+        print time, histogram
+        result.append((time, get_peaks(histogram)))
 
     return result
 
@@ -33,16 +36,36 @@ def get_spectogram(signal, window_size):
 
     return result
 
-def get_peaks(frequencies, magnitudes):
+def get_peaks(histogram):
     '''
     Returns the peaks for a given amplitude plot.
     '''
-
-    location_peaks = argrelextrema(np.array(magnitudes), np.greater)[0]
-    peaks = [(frequencies[i], magnitudes[i]) for i in location_peaks]
+    location_peaks = argrelextrema(np.array(histogram), np.greater)[0]
+    peaks = [(i, histogram[i]) for i in location_peaks]
     peaks = sorted(peaks, key=lambda pair: pair[1], reverse=True)
 
     return [peak[0] for peak in peaks[:5]]
+
+def get_spectogram(signal, window_size, bin_size):
+    '''
+    '''
+    samples = signal.get_samples()
+    width = len(samples) / window_size
+    height = window_size / 2 / bin_size
+    window = zero_padded_window(window_size)
+
+    result = np.empty((width, height))
+    for t in range(0, width):
+        partial_signal = window * samples[t*window_size:(t+1)*window_size]
+        spectrum = np.fft.rfft(partial_signal)
+
+        for bin in xrange(height):
+            sum = 0.0
+            for offset in xrange(bin_size):
+                sum += np.abs(spectrum[bin*bin_size+offset])
+            result[t][bin] = sum
+
+    return result
 
 def zero_padded_window(size):
     '''
@@ -61,34 +84,20 @@ def hamming_window(length, index, size):
     '''
     return None
 
-def show_spectogram(spectogram, time):
-    frequencies0, _ = spectogram[0]
-    width = len(spectogram)
-    height = len(frequencies0)
-    print width, height
 
-    image = np.empty((width, height))
-    for x in xrange(width):
-        _, spectrum = spectogram[x]
-        image[x] = spectrum
-
-    plt.imshow(image.T, cmap=plt.cm.Reds, aspect="auto", extent=[0, time, frequencies0[0], frequencies0[-1]])
+def show_spectogram(spectogram):
+    '''
+    '''
+    plt.imshow(spectogram.T, aspect="auto")
     ax = plt.gca()
     ax.set_xlabel("Time")
     ax.set_ylabel("Frequencies")
     plt.show()
 
 if __name__ == "__main__":
-    print get_peaks([100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110], [1,2,1,3,1,4,1,5,1,6,1])
     import soundfiles
     signal = soundfiles.load_wav("audio/gaai.wav")
-    spectogram = get_spectogram(signal, 800)
 
-    n = signal.get_samples()
-    fft = np.fft.fft(n)
-    freqs =  np.fft.fftfreq(len(n), 1.0 / signal.get_samplerate())
-    plt.plot(freqs, np.abs(fft))
-    plt.show()
     """
     for sample in spectogram[:3]:
         (freqs, spectrum) = sample
@@ -97,11 +106,13 @@ if __name__ == "__main__":
     show_spectogram(spectogram, 1.0 * len(signal.get_samples()) / signal.get_samplerate())
     """
 
-    fingers =  get_fingerprints(signal, 1024)
+    fingers =  get_fingerprints(signal, 2048, 2)
     time = []
     peaks = []
+
     for t, ps in fingers:
         time  += [t] * len(ps)
         peaks += ps
+
     plt.scatter(time, peaks)
     plt.show()
