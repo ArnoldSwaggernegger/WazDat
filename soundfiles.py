@@ -1,5 +1,6 @@
 from glob import glob
 from wave import open
+from os.path import isfile
 import numpy as np
 from scikits.samplerate import resample
 
@@ -17,6 +18,9 @@ def load_signal(filename):
     This function reads a file and creates a Signal object containing the 
     samples.
     '''
+    
+    if not isfile(filename):
+        return None
 
     if ".wav" in filename:
         return load_wav(filename)
@@ -109,3 +113,7 @@ class Signal():
 
     def __len__(self):
         return len(self.samples)
+        
+if __name__ == "__main__":
+    
+    print load_signal("gayeshite.wav")
