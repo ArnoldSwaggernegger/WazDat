@@ -72,7 +72,7 @@ def load_wav(filename):
     desired_framerate = 8000.
     resampled_samples = resample(
         normalized_samples,
-        framerate / desired_framerate, 'sinc_best'
+        desired_framerate / framerate, 'sinc_best'
     )
     return Signal(resampled_samples, desired_framerate, filename)
 
@@ -103,7 +103,7 @@ class Signal():
         return self.samplerate
 
     def get_duration(self):
-        return len(self.samples) / self.samplerate
+        return len(self.samples) / float(self.samplerate)
 
     def get_filename(self):
         return self.filename
