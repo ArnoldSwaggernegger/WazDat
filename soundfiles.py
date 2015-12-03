@@ -38,12 +38,18 @@ def load_wav(filename):
     frames = f.readframes(nframes)
     f.close()
         
-    if samplewidth == 2:
+    if samplewidth == 1:
+        dtype = np.int8
+        maxvalue = 2 ** (8 - 1)
+    elif samplewidth == 2:
         dtype = np.int16
         maxvalue = 2 ** (16 - 1)
-    if samplewidth == 4:
+    elif samplewidth == 4:
         dtype = np.int32
         maxvalue = 2 ** (32 - 1)
+    else:
+        print "Non supported sample width: %d" % samplewidth
+        exit()
     
     all_samples = np.fromstring(frames, dtype)
     
