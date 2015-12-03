@@ -1,43 +1,45 @@
-"""
-    This class provides a wrapper around signals from sound files. We cannot
-    work well with just ndarrays as sound signals, as the time at which the
-    peak occur are related to the samplerate.
-"""
-
-
 from glob import glob
 from wave import open
 import numpy as np
 from scikits.samplerate import resample
 
+
 def find_files(expression):
-    """ Returns all matching filenames. 
-    Example: expression = "data/*" find all files inside the folder data. """
+    '''
+    This function returns all matching filenames.
+    Example: expression = "data/*" find all files inside the folder data.
+    '''
     return glob(expression)
 
 
 def load_signal(filename):
-    """ Load a file as an array of samples. """
-    
+    '''
+    This function reads a file and creates a Signal object containing the 
+    samples.
+    '''
+
     if ".wav" in filename:
         return load_wav(filename)
-    
+
     if ".mp3" in filename:
         return load_mp3(filename)
-        
+
     if ".ogg" in filename:
         return load_ogg(filename)
-               
+
     return None
-    
-    
-def load_wav(filename):    
+
+
+def load_wav(filename):
+    '''
+    '''
     f = open(filename, "r")
-    
-    nchannels, samplewidth, framerate, nframes, comptype, compname = f.getparams()
+
+    nchannels, samplewidth, framerate, nframes,\
+        _, _ = f.getparams()
     frames = f.readframes(nframes)
     f.close()
-        
+
     if samplewidth == 1:
         dtype = np.int8
         maxvalue = 2 ** (8 - 1)
@@ -48,14 +50,14 @@ def load_wav(filename):
         dtype = np.int32
         maxvalue = 2 ** (32 - 1)
     else:
-        print "Non supported sample width: %d" % samplewidth
-        exit()
-    
+        print "Unsupported samplewidth: {}".format(samplewidth)
+        return None
+
     all_samples = np.fromstring(frames, dtype)
-    
+
     combined_samples = np.zeros(nframes)
-    
-    for i in xrange(nchannels):    
+
+    for i in xrange(nchannels):
         a = combined_samples
         b = all_samples[i::nchannels]
         condition = np.less(np.abs(a), np.abs(b))
@@ -64,20 +66,27 @@ def load_wav(filename):
     normalized_samples = combined_samples / maxvalue
 
     desired_framerate = 8000.
-    resampled_samples = resample(normalized_samples, framerate/desired_framerate, 'sinc_best')
+    resampled_samples = resample(
+        normalized_samples,
+        framerate / desired_framerate, 'sinc_best'
+    )
     return Signal(resampled_samples, desired_framerate, filename)
 
-    
-def load_mp3(filename):  
-    pass
-    
+
+def load_mp3(filename):
+    return None
 
 def load_ogg(filename):
-    pass
+    return None
 
 
 class Signal():
-    
+    '''
+    This class provides a wrapper around signals from sound files. We cannot
+    work well with just ndarrays as sound signals, as the time at which the
+    peak occur are related to the samplerate.
+    '''
+
     def __init__(self, samples, samplerate, filename):
         self.samples = samples
         self.samplerate = samplerate
@@ -88,15 +97,15 @@ class Signal():
 
     def get_samplerate(self):
         return self.samplerate
-        
+
     def get_duration(self):
         return len(self.samples) / self.samplerate
-     
+
     def get_filename(self):
         return self.filename
-        
+
     def __getitem__(self, index):
         return self.samples[index]
-        
+
     def __len__(self):
         return len(self.samples)
