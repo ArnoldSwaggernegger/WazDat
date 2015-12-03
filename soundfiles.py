@@ -1,5 +1,6 @@
 from glob import glob
 from wave import open
+from os.path import isfile
 import numpy as np
 from scikits.samplerate import resample
 
@@ -17,6 +18,9 @@ def load_signal(filename):
     This function reads a file and creates a Signal object containing the 
     samples.
     '''
+    
+    if not isfile(filename):
+        return None
 
     if ".wav" in filename:
         return load_wav(filename)
@@ -68,7 +72,7 @@ def load_wav(filename):
     desired_framerate = 8000.
     resampled_samples = resample(
         normalized_samples,
-        framerate / desired_framerate, 'sinc_best'
+        desired_framerate / framerate, 'sinc_best'
     )
     return Signal(resampled_samples, desired_framerate, filename)
 
@@ -99,7 +103,7 @@ class Signal():
         return self.samplerate
 
     def get_duration(self):
-        return len(self.samples) / self.samplerate
+        return len(self.samples) / float(self.samplerate)
 
     def get_filename(self):
         return self.filename
@@ -109,3 +113,7 @@ class Signal():
 
     def __len__(self):
         return len(self.samples)
+        
+if __name__ == "__main__":
+    
+    print load_signal("gayeshite.wav")
