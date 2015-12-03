@@ -12,9 +12,9 @@ def get_fingerprints(signal, window_size, bin_size):
     result = []
     time_samples = get_spectogram(signal, window_size, bin_size)
 
-    print time_samples
+    #print time_samples
     for time, histogram in enumerate(time_samples):
-        print time, histogram
+        #print time, histogram
         result.append((time, get_peaks(histogram)))
 
     return result
@@ -32,7 +32,7 @@ def get_spectogram(signal, window_size):
             len(partial_signal), 1.0 / signal.get_samplerate()
         )
 
-        result.append((i * signal.get_duration() / float(window_size), frequencies, np.abs(spectrum)))
+        result.append((i * signal.get_duration() / float(window_size), frequencies, np.abs(spectgrum)))
 
     return result
 
@@ -63,7 +63,7 @@ def get_spectogram(signal, window_size, bin_size):
             sum = 0.0
             for offset in xrange(bin_size):
                 sum += np.abs(spectrum[bin*bin_size+offset])
-            result[t][bin] = sum
+            result[t][height-bin-1] = sum
 
     return result
 
@@ -96,7 +96,7 @@ def show_spectogram(spectogram):
 
 if __name__ == "__main__":
     import soundfiles
-    signal = soundfiles.load_wav("audio/gaai.wav")
+    signal = soundfiles.load_wav("audio/muziek.wav")
 
     """
     for sample in spectogram[:3]:
