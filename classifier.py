@@ -1,7 +1,7 @@
-""" The classifier uses a hashtable based on fingerprint hashes. 
-
-    For each possible matched file, check whether the time points between the
-    hashes are more or less the same.
+"""
+The classifier uses a hashtable based on fingerprint hashes.
+For each possible matched file, check whether the time points between the
+hashes are more or less the same.
 """
 
 
@@ -13,7 +13,7 @@ def similar(a, b):
     """ This function returns whether two tokens a and b have similar 
         fingerprint. """
     # TODO not made for sound fingerprints
-    if -0.5 <= a.fingerprint - b.fingerprint <= 0.5:
+    if -0.1 <= a.fingerprint - b.fingerprint <= 0.1:
         return True
     return False 
 
@@ -37,7 +37,7 @@ class Token:
     """ The Token class is used to create token objects for the classifier.
         Each token contains the sound fingerprint, the corresponding time
         and the filename of the original file. """
-        
+
     def __init__(self, fingerprint, time, filename):
         self.fingerprint = fingerprint
         self.time = time
@@ -114,5 +114,3 @@ if __name__ == "__main__":
     print cl.classify(c[40:50])
     print cl.classify(d[50:60])
     print cl.classify(e[70:80])
-    
-    
