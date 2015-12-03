@@ -34,7 +34,7 @@ def load_signal(filename):
 def load_wav(filename):    
     f = open(filename, "r")
     
-    nchannels, samplewidth, framerate, nframes, comptype, compname = f.getparams()
+    nchannels, samplewidth, framerate, nframes, _, _ = f.getparams()
     frames = f.readframes(nframes)
     f.close()
         
@@ -61,11 +61,11 @@ def load_wav(filename):
 
     
 def load_mp3(filename):  
-    pass
+    return None
     
 
 def load_ogg(filename):
-    pass
+    return None
 
 
 class Signal():
