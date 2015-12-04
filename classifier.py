@@ -14,7 +14,7 @@ def similar(a, b):
     This function returns whether two tokens a and b have similar 
     fingerprint.
     '''
-    # TODO not made for sound fingerprints
+    # TODO not made for sound fingerprints, which should be tuples of (df, dt)
     if -0.1 <= a.fingerprint - b.fingerprint <= 0.1:
         return True
     return False 
@@ -88,9 +88,24 @@ class Classifier:
              
         for filename, matches in file_matches.iteritems():
         
-            dt = [a.time - b.time for match in matches] 
-            histogram, bins = np.histogram(dt, 32)
-            if np.max(histogram) > 0.5 * len(tokens):
+            if len(matches) < 0.5 * len(tokens):
+                continue
+        
+            dt = [a.time - b.time for match in matches]
+            upper_bound = np.ceil(np.max(dt))
+            lower_bound = np.floor(np.min(dt))
+             
+            """ Create a histogram with binsize 1. The two additional bins at 
+                the edges are to make sure the next step always goes well. """
+            binsize = 0.5
+            histogram, bins = np.histogram(dt, bins=np.arange(lower_bound - binsize, upper_bound + 3 * binsize, binsize))
+            
+            """ If the highest peak in the histogram combined with its 
+                neightbours cover at least 50% of the input tokens, this file
+                is likely the good match. """
+            maxindex = np.argmax(histogram)
+            
+            if histogram[maxindex - 1] + histogram[maxindex] + histogram[maxindex + 1] >= 0.5 * len(tokens):
                 return filename
 
         return None
