@@ -2,7 +2,25 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import argrelextrema
 from scipy.io.wavfile import read
+from classifier import Token
 
+def get_tokens(signal, window_size, bin_size):
+    fingerprints = get_fingerprints(signal, window_size, bin_size)
+    result = []
+
+    leftoffset = 2
+    width = 3
+    height = 50
+    for time, peaks in fingerprints:
+        for anchorpoint in peaks:
+            minfreq = anchorpoint - height / 2
+            maxfreq = anchorpoint + height / 2
+            for searchtime in xrange(time + leftoffset, min(time + leftoffset + width, len(fingerprints))):
+                for matchpoint in fingerprints[searchtime][1]:
+                    if matchpoint > minfreq and matchpoint < maxfreq:
+                        result.append(Token((anchorpoint, matchpoint, searchtime-time), time, ""))
+
+    return result
 
 def get_fingerprints(signal, window_size, bin_size):
     '''
@@ -106,8 +124,11 @@ if __name__ == "__main__":
     show_spectogram(spectogram, 1.0 * len(signal.get_samples()) / signal.get_samplerate())
     """
 
-    fingers =  get_fingerprints(signal, 2048, 2)
-    time = []
+
+    #fingers =  get_fingerprints(signal, 1024, 1)
+    hashes = get_tokens(signal, 1024, 1)
+    #print hashes
+    """time = []
     peaks = []
 
     for t, ps in fingers:
@@ -115,4 +136,4 @@ if __name__ == "__main__":
         peaks += ps
 
     plt.scatter(time, peaks)
-    plt.show()
+    plt.show()"""
