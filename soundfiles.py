@@ -1,8 +1,20 @@
+"""
+    soundfiles.py
+
+    This file contains function to load audio files into Signal objects 
+    containing raw samples.
+"""
+
+
+import numpy as np
+
 from glob import glob
 from wave import open
 from os.path import isfile
-import numpy as np
 from scikits.samplerate import resample
+
+from fingerprint import get_fingerprints
+from classifier import Token
 
 
 def find_files(expression):
@@ -20,6 +32,7 @@ def load_signal(filename):
     '''
     
     if not isfile(filename):
+        print "Error: file not found"
         return None
 
     if ".wav" in filename:
@@ -31,6 +44,7 @@ def load_signal(filename):
     if ".ogg" in filename:
         return load_ogg(filename)
 
+    print "Error: filetype not supported"
     return None
 
 
@@ -54,7 +68,7 @@ def load_wav(filename):
         dtype = np.int32
         maxvalue = 2 ** (32 - 1)
     else:
-        print "Unsupported samplewidth: {}".format(samplewidth)
+        print "Error: unsupported samplewidth {}".format(samplewidth)
         return None
 
     all_samples = np.fromstring(frames, dtype)
@@ -70,15 +84,15 @@ def load_wav(filename):
     normalized_samples = combined_samples / maxvalue
 
     desired_framerate = 8000.
-    resampled_samples = resample(
-        normalized_samples,
-        desired_framerate / framerate, 'sinc_best'
-    )
+    resampled_samples = resample(normalized_samples,
+                                 desired_framerate / framerate, 'sinc_best')
+                                 
     return Signal(resampled_samples, desired_framerate, filename)
 
 
 def load_mp3(filename):
     return None
+
 
 def load_ogg(filename):
     return None
@@ -95,6 +109,9 @@ class Signal():
         self.samples = samples
         self.samplerate = samplerate
         self.filename = filename
+            
+    def get_tokens(self):
+        return [Token(peak, time, self.filename) for peak, time in get_fingerprints(self)]       
 
     def get_samples(self):
         return self.samples
@@ -113,7 +130,3 @@ class Signal():
 
     def __len__(self):
         return len(self.samples)
-        
-if __name__ == "__main__":
-    
-    print load_signal("gayeshite.wav")

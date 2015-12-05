@@ -1,10 +1,17 @@
+"""
+    fingerprint.py
+    
+"""
+
+
 import numpy as np
 import matplotlib.pyplot as plt
+
 from scipy.signal import argrelextrema
 from scipy.io.wavfile import read
 
 
-def get_fingerprints(signal, window_size, bin_size):
+def get_fingerprints(signal, window_size=2014, bin_size=2):
     '''
     get spectrogram peaks as (time, frequency) points
     '''
@@ -15,7 +22,8 @@ def get_fingerprints(signal, window_size, bin_size):
     #print time_samples
     for time, histogram in enumerate(time_samples):
         #print time, histogram
-        result.append((time, get_peaks(histogram)))
+        for peak in get_peaks(histogram):
+            result.append((peak, time))
 
     return result
 

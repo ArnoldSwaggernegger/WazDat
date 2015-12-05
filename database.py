@@ -1,5 +1,5 @@
 import json
-import os.path
+import os
 import classifier
 
 
@@ -52,19 +52,21 @@ class Database:
     def _read_db(self):
         '''
         '''
-        mode = 'r'
-        if os.path.isfile(self.name):
-            mode = 'rw'
+        if not os.path.isfile(self.name):
+            return []
 
-        with open(self.name, mode) as file:
+        with open(self.name, "r") as file:
             try:
-                data = json.load(file)
+                return json.load(file)
             except ValueError:
-                data = []
-            return data
+                return []
 
     def _write_db(self):
         '''
         '''
-        with open(self.name, 'w') as file:
+        
+        if not os.path.exists(self.DBPREFIX):
+            os.makedirs(self.DBPREFIX)
+        
+        with open(self.name, 'w+') as file:
             json.dump(self.database, file)

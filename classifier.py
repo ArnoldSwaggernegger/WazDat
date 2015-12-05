@@ -6,7 +6,6 @@ hashes are more or less the same.
 
 
 import numpy as np
-import database as db
 
 
 def similar(a, b):
@@ -137,9 +136,6 @@ if __name__ == "__main__":
         cl.add_token(i)
     for i in e:
         cl.add_token(i)
-
-    #database = db.Database('testtokens1')
-    #database.as_classifier()
 
     print cl.classify(a[20:30])
     print cl.classify(b[30:40])

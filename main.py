@@ -1,31 +1,41 @@
-import soundfiles
-import fingerprint
-import sys
+"""
+    main.py
+
+"""
+
+
+from sys import argv, exit
+
+from soundfiles import load_signal
+from database import Database
+
 
 if __name__ == "__main__":
 
-    tutorial = "use: main.py [database] [signal]"
+    if len(argv) < 3:
+        print "usage: main.py [database] [signal]"
+        exit()
 
-    try:
-        database = database.load(arg[1])
-    except:
-        print "something went wrong with loading the database\n", tutorial
-        sys.exit()
+    database_name = argv[1]
+    database = Database(database_name)
+    
+    if database is None:
+        print "This database could not be loaded"
+        exit()
 
-    try:
-        signal = soundfiles.load_signal("audio/" + arg[2])
-        if signal == None:
-            raise
-    except:
-         print "something went wrong with loading the signal\n", tutorial
-         sys.exit()
+    filename = argv[2]
+    signal = load_signal(filename)
+    
+    if signal is None:
+        print "This audio file could not be loaded"
+        exit()
 
-    # fingerprint.get_fingerprints(signal)
+    tokens = signal.get_tokens()
+    classifier = database.as_classifier()
 
-    # create classifier from database
-
-    # get input file fingerprints
-
-    # match fingerprints using the classifier
-
-    # print output
+    match = classifier.classify(tokens)
+    
+    if match:
+        print "File {} matches with database entry {}".format(filename, match)
+    else:
+        print "File {} could not be matched".format(filename)
