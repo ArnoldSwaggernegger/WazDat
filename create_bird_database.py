@@ -13,7 +13,7 @@ if __name__ == "__main__":
     remove(Database.DBPREFIX + "vogels") 
     database = Database("vogels")
     
-    for filename in ["training/track01_ijsvogel.wav", "training/track03_goudvink.wav"]: #find_files("training/*.wav"):
+    for filename in ["training/track01_ijsvogel.wav"]: #find_files("training/*.wav"):
         with open(filename, "r") as f:
             print "Reading {}".format(filename)
             signal = load_signal(filename)

@@ -2,6 +2,7 @@
     fingerprint.py
 """
 
+
 import numpy as np
 
 import matplotlib.pyplot as plt
@@ -11,7 +12,7 @@ from scipy.io.wavfile import read
 from classifier import Token
 
 
-def get_tokens(signal, window_size=1024, bin_size=1,):
+def get_tokens(signal, window_size=1024, bin_size=1):
     fingerprints = get_fingerprints(signal, window_size, bin_size)
     result = []
 
@@ -30,7 +31,7 @@ def get_tokens(signal, window_size=1024, bin_size=1,):
     return result
 
 
-def get_fingerprints(signal, window_size=1024, bin_size=2):
+def get_fingerprints(signal, window_size=1024, bin_size=1):
     '''
     get spectrogram peaks as (time, frequency) points
     '''

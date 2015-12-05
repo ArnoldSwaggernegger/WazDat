@@ -13,11 +13,13 @@ def similar(a, b):
     This function returns whether two tokens a and b have similar
     fingerprint.
     '''
-    freq_margin = 5
-    if a.fingerprint[0] > b.fingerprint[0] - freq_margin and a.fingerprint[0] < b.fingerprint[0] + freq_margin:
-        if a.fingerprint[1] > b.fingerprint[1] - freq_margin and a.fingerprint[1] < b.fingerprint[1] + freq_margin:
+    
+    frequency_margin = 8
+    time_margin = 2
+    
+    if (- frequency_margin <= a.fingerprint[0] - b.fingerprint[0] <= frequency_margin 
+        and - time_margin <= a.fingerprint[1] - b.fingerprint[1] <= time_margin):
             return True
-
     return False
 
 def sort_per_filename(matches):
