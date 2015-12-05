@@ -4,7 +4,7 @@ from scipy.signal import argrelextrema
 from scipy.io.wavfile import read
 from classifier import Token
 
-def get_tokens(signal, window_size, bin_size):
+def get_tokens(signal, window_size, bin_size, filename):
     fingerprints = get_fingerprints(signal, window_size, bin_size)
     result = []
 
@@ -18,7 +18,7 @@ def get_tokens(signal, window_size, bin_size):
             for searchtime in xrange(time + leftoffset, min(time + leftoffset + width, len(fingerprints))):
                 for matchpoint in fingerprints[searchtime][1]:
                     if matchpoint > minfreq and matchpoint < maxfreq:
-                        result.append(Token((anchorpoint, matchpoint, searchtime-time), time, ""))
+                        result.append(Token((anchorpoint, matchpoint, searchtime-time), time, filename))
 
     return result
 
