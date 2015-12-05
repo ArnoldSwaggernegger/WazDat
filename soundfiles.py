@@ -110,8 +110,8 @@ class Signal():
         self.samplerate = samplerate
         self.filename = filename
             
-    def get_tokens(self):
-        return [Token(peak, time, self.filename) for peak, time in get_fingerprints(self)]       
+    #def get_tokens(self):
+    #    return [Token(peak, time, self.filename) for peak, time in get_fingerprints(self)]       
 
     def get_samples(self):
         return self.samples

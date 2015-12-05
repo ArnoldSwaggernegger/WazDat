@@ -1,17 +1,36 @@
-"""
+""" 
     fingerprint.py
-    
 """
-
 
 import numpy as np
-import matplotlib.pyplot as plt
 
+import matplotlib.pyplot as plt
 from scipy.signal import argrelextrema
 from scipy.io.wavfile import read
 
+from classifier import Token
 
-def get_fingerprints(signal, window_size=2014, bin_size=2):
+
+def get_tokens(signal, window_size=1024, bin_size=1,):
+    fingerprints = get_fingerprints(signal, window_size, bin_size)
+    result = []
+
+    leftoffset = 2
+    width = 3
+    height = 48
+    for time, peaks in fingerprints:
+        for anchorpoint in peaks:
+            minfreq = anchorpoint - height / 2
+            maxfreq = anchorpoint + height / 2
+            for searchtime in xrange(time + leftoffset, min(time + leftoffset + width, len(fingerprints))):
+                for matchpoint in fingerprints[searchtime][1]:
+                    if minfreq <= matchpoint <= maxfreq:
+                        result.append(Token((anchorpoint, matchpoint, searchtime - time), time, signal.get_filename()))
+
+    return result
+
+
+def get_fingerprints(signal, window_size=1024, bin_size=2):
     '''
     get spectrogram peaks as (time, frequency) points
     '''
@@ -22,10 +41,10 @@ def get_fingerprints(signal, window_size=2014, bin_size=2):
     #print time_samples
     for time, histogram in enumerate(time_samples):
         #print time, histogram
-        for peak in get_peaks(histogram):
-            result.append((peak, time))
+        result.append((time, get_peaks(histogram)))
 
     return result
+
 
 def get_spectogram(signal, window_size):
     result = []
@@ -44,6 +63,7 @@ def get_spectogram(signal, window_size):
 
     return result
 
+
 def get_peaks(histogram):
     '''
     Returns the peaks for a given amplitude plot.
@@ -53,6 +73,7 @@ def get_peaks(histogram):
     peaks = sorted(peaks, key=lambda pair: pair[1], reverse=True)
 
     return [peak[0] for peak in peaks[:5]]
+
 
 def get_spectogram(signal, window_size, bin_size):
     '''
@@ -74,6 +95,7 @@ def get_spectogram(signal, window_size, bin_size):
             result[t][height-bin-1] = sum
 
     return result
+
 
 def zero_padded_window(size):
     '''
@@ -102,6 +124,7 @@ def show_spectogram(spectogram):
     ax.set_ylabel("Frequencies")
     plt.show()
 
+
 if __name__ == "__main__":
     import soundfiles
     signal = soundfiles.load_wav("audio/muziek.wav")
@@ -114,8 +137,11 @@ if __name__ == "__main__":
     show_spectogram(spectogram, 1.0 * len(signal.get_samples()) / signal.get_samplerate())
     """
 
-    fingers =  get_fingerprints(signal, 2048, 2)
-    time = []
+
+    #fingers =  get_fingerprints(signal, 1024, 1)
+    hashes = get_tokens(signal, 1024, 1)
+    #print hashes
+    """time = []
     peaks = []
 
     for t, ps in fingers:
@@ -123,4 +149,5 @@ if __name__ == "__main__":
         peaks += ps
 
     plt.scatter(time, peaks)
-    plt.show()
+    plt.show()"""
+

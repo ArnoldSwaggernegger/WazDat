@@ -3,12 +3,11 @@
 
 """
 
-
 from sys import argv, exit
 
 from soundfiles import load_signal
 from database import Database
-
+from fingerprint import get_tokens
 
 if __name__ == "__main__":
 
@@ -30,7 +29,7 @@ if __name__ == "__main__":
         print "This audio file could not be loaded"
         exit()
 
-    tokens = signal.get_tokens()
+    tokens = get_tokens(signal)
     classifier = database.as_classifier()
 
     match = classifier.classify(tokens)
