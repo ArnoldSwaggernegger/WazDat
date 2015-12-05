@@ -15,10 +15,15 @@ def similar(a, b):
     fingerprint.
     '''
     # TODO not made for sound fingerprints, which should be tuples of (df, dt)
-    if -0.1 <= a.fingerprint - b.fingerprint <= 0.1:
-        return True
-    return False
+    #if -0.1 <= a.fingerprint - b.fingerprint <= 0.1:
+    #    return True
+    #return False
+    freq_margin = 5
+    if a.fingerprint[0] > b.fingerprint[0] - freq_margin and a.fingerprint[0] < b.fingerprint[0] + freq_margin:
+        if a.fingerprint[1] > b.fingerprint[1] - freq_margin and a.fingerprint[1] < b.fingerprint[1] + freq_margin:
+            return True
 
+    return False
 
 def sort_per_filename(matches):
     '''
