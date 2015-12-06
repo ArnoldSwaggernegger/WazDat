@@ -6,20 +6,23 @@ hashes are more or less the same.
 
 
 import numpy as np
-
+import database as db
+import matplotlib.pyplot as plt
 
 def similar(a, b):
     '''
     This function returns whether two tokens a and b have similar
     fingerprint.
     '''
-    
-    frequency_margin = 8
-    time_margin = 2
-    
-    if (- frequency_margin <= a.fingerprint[0] - b.fingerprint[0] <= frequency_margin 
-        and - time_margin <= a.fingerprint[1] - b.fingerprint[1] <= time_margin):
+    # TODO not made for sound fingerprints, which should be tuples of (df, dt)
+    #if -0.1 <= a.fingerprint - b.fingerprint <= 0.1:
+    #    return True
+    #return False
+    freq_margin = 5
+    if a.fingerprint[0] > b.fingerprint[0] - freq_margin and a.fingerprint[0] < b.fingerprint[0] + freq_margin:
+        if a.fingerprint[1] > b.fingerprint[1] - freq_margin and a.fingerprint[1] < b.fingerprint[1] + freq_margin:
             return True
+
     return False
 
 def sort_per_filename(matches):
@@ -93,21 +96,25 @@ class Classifier:
         ''' Check each possible file match. If the candidate has a match for at
             least 50% of the input tokens around the same time interval, it
             is very likely the correct match. '''
-
         for filename, matches in file_matches.iteritems():
+            #if len(matches) < 0.5 * len(tokens):
+            #    continue
         
-            if len(matches) < 0.5 * len(tokens):
-                continue
-        
-            dt = [a.time - b.time for match in matches]
+            dt = [match[0].time - match[1].time for match in matches]
             upper_bound = np.ceil(np.max(dt))
             lower_bound = np.floor(np.min(dt))
              
-            """ Create a histogram with binsize 0.5. The two additional bins at 
+            """ Create a histogram with binsize 1. The two additional bins at 
                 the edges are to make sure the next step always goes well. """
             binsize = 0.5
             histogram, bins = np.histogram(dt, bins=np.arange(lower_bound - binsize, upper_bound + 3 * binsize, binsize))
-            
+
+            plt.title(filename)
+            width = 0.7 * (bins[1] - bins[0])
+            center = (bins[:-1] + bins[1:]) / 2
+            plt.bar(center, histogram, align='center', width=width)
+            plt.show()
+
             """ If the highest peak in the histogram combined with its 
                 neightbours cover at least 50% of the input tokens, this file
                 is likely the good match. """
@@ -117,3 +124,34 @@ class Classifier:
                 return filename
 
         return None
+
+
+if __name__ == "__main__":
+
+    cl = Classifier()
+
+    a = [Token(i * np.sin(2 * i), i, "a") for i in xrange(100)]
+    b = [Token(i * np.sin(3 * i), i, "b") for i in xrange(100)]
+    c = [Token(i * np.sin(5 * i), i, "c") for i in xrange(100)]
+    d = [Token(i * np.sin(7 * i), i, "d") for i in xrange(100)]
+    e = [Token(i * np.sin(11 * i), i, "e") for i in xrange(100)]
+
+    for i in a:
+        cl.add_token(i)
+    for i in b:
+        cl.add_token(i)
+    for i in c:
+        cl.add_token(i)
+    for i in d:
+        cl.add_token(i)
+    for i in e:
+        cl.add_token(i)
+
+    #database = db.Database('testtokens1')
+    #database.as_classifier()
+
+    print cl.classify(a[20:30])
+    print cl.classify(b[30:40])
+    print cl.classify(c[40:50])
+    print cl.classify(d[50:60])
+    print cl.classify(e[70:80])

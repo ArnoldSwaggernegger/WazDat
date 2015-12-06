@@ -23,6 +23,7 @@ if __name__ == "__main__":
         exit()
 
     filename = argv[2]
+    print "Reading %s" % filename
     signal = load_signal(filename)
     
     if signal is None:
@@ -32,6 +33,7 @@ if __name__ == "__main__":
     tokens = get_tokens(signal)
     classifier = database.as_classifier()
 
+    print "Classifying..."
     match = classifier.classify(tokens)
     
     if match:

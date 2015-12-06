@@ -12,13 +12,13 @@ from scipy.io.wavfile import read
 from classifier import Token
 
 
-def get_tokens(signal, window_size=1024, bin_size=1):
+def get_tokens(signal, window_size=2048, bin_size=8):
     fingerprints = get_fingerprints(signal, window_size, bin_size)
     result = []
 
-    leftoffset = 2
-    width = 3
-    height = 48
+    leftoffset = 1
+    width = 5
+    height = 50
     for time, peaks in fingerprints:
         for anchorpoint in peaks:
             minfreq = anchorpoint - height / 2
@@ -128,21 +128,20 @@ def show_spectogram(spectogram):
 
 if __name__ == "__main__":
     import soundfiles
-    signal = soundfiles.load_wav("audio/muziek.wav")
+    """signal = soundfiles.load_wav("training/track01_ijsvogel.wav")
+    spectogram = get_spectogram(signal, 1024, 1)
+    show_spectogram(spectogram)
 
-    """
-    for sample in spectogram[:3]:
-        (freqs, spectrum) = sample
-        plt.plot(freqs, spectrum)
-        plt.show()
-    show_spectogram(spectogram, 1.0 * len(signal.get_samples()) / signal.get_samplerate())
-    """
+    signal = soundfiles.load_wav("training/track03_goudvink.wav")
+    spectogram = get_spectogram(signal, 1024, 1)
+    show_spectogram(spectogram)"""
 
-
-    #fingers =  get_fingerprints(signal, 1024, 1)
-    hashes = get_tokens(signal, 1024, 1)
+    
+    #hashes = get_tokens(signal, 1024, 1)
     #print hashes
-    """time = []
+    signal = soundfiles.load_wav("training/track01_ijsvogel.wav")
+    fingers =  get_fingerprints(signal, 1024, 1)
+    time = []
     peaks = []
 
     for t, ps in fingers:
@@ -150,5 +149,17 @@ if __name__ == "__main__":
         peaks += ps
 
     plt.scatter(time, peaks)
-    plt.show()"""
+    plt.show()
+
+    signal = soundfiles.load_wav("training/track03_goudvink.wav")
+    fingers =  get_fingerprints(signal, 1024, 1)
+    time = []
+    peaks = []
+
+    for t, ps in fingers:
+        time  += [t] * len(ps)
+        peaks += ps
+
+    plt.scatter(time, peaks)
+    plt.show()
 
