@@ -96,11 +96,11 @@ class Classifier:
         ''' Check each possible file match. If the candidate has a match for at
             least 50% of the input tokens around the same time interval, it
             is very likely the correct match. '''
-        for filename, matches in file_matches.iteritems():
-            #if len(matches) < 0.5 * len(tokens):
+        for filename, fmatches in file_matches.iteritems():
+            #if len(fmatches) < 0.5 * len(tokens):
             #    continue
         
-            dt = [match[0].time - match[1].time for match in matches]
+            dt = [match[0].time - match[1].time for match in fmatches]
             upper_bound = np.ceil(np.max(dt))
             lower_bound = np.floor(np.min(dt))
              
@@ -120,8 +120,8 @@ class Classifier:
                 is likely the good match. """
             maxindex = np.argmax(histogram)
             
-            if histogram[maxindex - 1] + histogram[maxindex] + histogram[maxindex + 1] >= 0.5 * len(tokens):
-                return filename
+            #if histogram[maxindex - 1] + histogram[maxindex] + histogram[maxindex + 1] >= 0.5 * len(tokens):
+            #    return filename
 
         return None
 
