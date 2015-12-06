@@ -40,13 +40,13 @@ def get_fingerprints(signal, window_size, bin_size):
     time_samples = get_spectogram(signal, window_size, bin_size)
     #show_spectogram(time_samples)
 
-    #print time_samples
     width = time_samples.shape[1]
     prev_histogram = np.zeros(width)
     for time, histogram in enumerate(time_samples):
-        #print time, histogram
-        peaks = get_peaks(histogram, prev_histogram)
+        peaks = get_peaks(histogram - prev_histogram)
         result.append((time, peaks))
+        
+        #TODO: Implement something like in the 3rd article with a guassian blur at peaks
         prev_histogram = histogram
 
     return result
@@ -70,11 +70,11 @@ def get_spectogram(signal, window_size):
     return result
 
 
-def get_peaks(histogram, prev_histogram):
+def get_peaks(histogram):
     '''
     Returns the peaks for a given amplitude plot.
     '''
-    location_peaks = argrelextrema(np.array(histogram - prev_histogram), np.greater)[0]
+    location_peaks = argrelextrema(np.array(histogram), np.greater)[0]
     peaks = [(i, histogram[i]) for i in location_peaks]
     peaks = sorted(peaks, key=lambda pair: pair[1], reverse=True)
 
