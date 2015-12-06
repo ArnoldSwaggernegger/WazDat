@@ -17,8 +17,8 @@ def get_tokens(signal, window_size=2048, bin_size=8):
     result = []
 
     leftoffset = 1
-    width = 5
-    height = 50
+    width = 2
+    height = 30
     for time, peaks in fingerprints:
         for anchorpoint in peaks:
             minfreq = anchorpoint - height / 2
@@ -31,18 +31,23 @@ def get_tokens(signal, window_size=2048, bin_size=8):
     return result
 
 
-def get_fingerprints(signal, window_size=1024, bin_size=1):
+def get_fingerprints(signal, window_size, bin_size):
     '''
     get spectrogram peaks as (time, frequency) points
     '''
 
     result = []
     time_samples = get_spectogram(signal, window_size, bin_size)
+    #show_spectogram(time_samples)
 
     #print time_samples
+    width = time_samples.shape[1]
+    prev_histogram = np.zeros(width)
     for time, histogram in enumerate(time_samples):
         #print time, histogram
-        result.append((time, get_peaks(histogram)))
+        peaks = get_peaks(histogram, prev_histogram)
+        result.append((time, peaks))
+        prev_histogram = histogram
 
     return result
 
@@ -65,15 +70,20 @@ def get_spectogram(signal, window_size):
     return result
 
 
-def get_peaks(histogram):
+def get_peaks(histogram, prev_histogram):
     '''
     Returns the peaks for a given amplitude plot.
     '''
-    location_peaks = argrelextrema(np.array(histogram), np.greater)[0]
+    location_peaks = argrelextrema(np.array(histogram - prev_histogram), np.greater)[0]
     peaks = [(i, histogram[i]) for i in location_peaks]
     peaks = sorted(peaks, key=lambda pair: pair[1], reverse=True)
 
-    return [peak[0] for peak in peaks[:5]]
+    result = []
+    for peak in peaks[:5]:
+        if peak[0] > 100:
+            result.append(peak[0])
+    return result
+    #return [peak[0] for peak in peaks[:5]]
 
 
 def get_spectogram(signal, window_size, bin_size):
@@ -140,7 +150,7 @@ if __name__ == "__main__":
     #hashes = get_tokens(signal, 1024, 1)
     #print hashes
     signal = soundfiles.load_wav("training/track01_ijsvogel.wav")
-    fingers =  get_fingerprints(signal, 1024, 1)
+    fingers =  get_fingerprints(signal, 2048, 8)
     time = []
     peaks = []
 
@@ -152,7 +162,7 @@ if __name__ == "__main__":
     plt.show()
 
     signal = soundfiles.load_wav("training/track03_goudvink.wav")
-    fingers =  get_fingerprints(signal, 1024, 1)
+    fingers =  get_fingerprints(signal, 2048, 8)
     time = []
     peaks = []
 

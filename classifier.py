@@ -18,10 +18,11 @@ def similar(a, b):
     #if -0.1 <= a.fingerprint - b.fingerprint <= 0.1:
     #    return True
     #return False
-    freq_margin = 5
+    freq_margin = 10
     if a.fingerprint[0] > b.fingerprint[0] - freq_margin and a.fingerprint[0] < b.fingerprint[0] + freq_margin:
         if a.fingerprint[1] > b.fingerprint[1] - freq_margin and a.fingerprint[1] < b.fingerprint[1] + freq_margin:
-            return True
+            if a.fingerprint[2] == b.fingerprint[2]:
+                return True
 
     return False
 
@@ -119,9 +120,8 @@ class Classifier:
                 neightbours cover at least 50% of the input tokens, this file
                 is likely the good match. """
             maxindex = np.argmax(histogram)
-            
-            #if histogram[maxindex - 1] + histogram[maxindex] + histogram[maxindex + 1] >= 0.5 * len(tokens):
-            #    return filename
+            if np.sum(histogram[maxindex-1:maxindex+1]) >= 0.2 * len(fmatches):
+                return filename
 
         return None
 
