@@ -80,7 +80,7 @@ def get_peaks(histogram):
 
     result = []
     for peak in peaks[:5]:
-        if peak[0] > 0:
+        if peak[0] > 100:
             result.append(peak[0])
     return result
     #return [peak[0] for peak in peaks[:5]]
@@ -133,7 +133,7 @@ def show_spectogram(spectogram):
     ax = plt.gca()
     ax.set_xlabel("Time")
     ax.set_ylabel("Frequencies")
-    plt.show()
+    #plt.show()
 
 
 if __name__ == "__main__":
@@ -158,7 +158,7 @@ if __name__ == "__main__":
         time  += [t] * len(ps)
         peaks += ps
 
-    plt.scatter(time, peaks)
+    plt.scatter(time, peaks, color="red")
     plt.show()
 
     signal = soundfiles.load_wav("training/track03_goudvink.wav")
@@ -170,6 +170,6 @@ if __name__ == "__main__":
         time  += [t] * len(ps)
         peaks += ps
 
-    plt.scatter(time, peaks)
+    plt.scatter(time, peaks, color="red")
     plt.show()
 
