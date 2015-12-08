@@ -1,9 +1,9 @@
-"""
-    soundfiles.py
+'''
+soundfiles.py
 
-    This file contains function to load audio files into Signal objects 
-    containing raw samples.
-"""
+This file contains function to load audio files into Signal objects
+containing raw samples.
+'''
 
 
 import numpy as np
@@ -12,9 +12,6 @@ from glob import glob
 from wave import open
 from os.path import isfile
 from scikits.samplerate import resample
-
-from fingerprint import get_fingerprints
-from classifier import Token
 
 
 def find_files(expression):
@@ -27,10 +24,10 @@ def find_files(expression):
 
 def load_signal(filename):
     '''
-    This function reads a file and creates a Signal object containing the 
+    This function reads a file and creates a Signal object containing the
     samples.
     '''
-    
+
     if not isfile(filename):
         print "Error: file not found"
         return None
@@ -86,7 +83,7 @@ def load_wav(filename):
     desired_framerate = 8000.
     resampled_samples = resample(normalized_samples,
                                  desired_framerate / framerate, 'sinc_best')
-                                 
+
     return Signal(resampled_samples, desired_framerate, filename)
 
 
@@ -108,7 +105,7 @@ class Signal():
     def __init__(self, samples, samplerate, filename):
         self.samples = samples
         self.samplerate = samplerate
-        self.filename = filename    
+        self.filename = filename
 
     def get_samples(self):
         return self.samples

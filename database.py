@@ -64,9 +64,14 @@ class Database:
     def _write_db(self):
         '''
         '''
-        
+
         if not os.path.exists(self.DBPREFIX):
             os.makedirs(self.DBPREFIX)
-        
+
         with open(self.name, 'w+') as file:
             json.dump(self.database, file)
+
+    def __str__(self):
+        '''
+        '''
+        return self.name

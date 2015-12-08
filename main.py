@@ -1,42 +1,51 @@
-"""
-    main.py
+'''
+main.py
+'''
 
-"""
-
-from sys import argv, exit
-
-from soundfiles import load_signal
+import argparse
 from database import Database
+from soundfiles import load_signal
+from sys import exit
 from fingerprint import get_tokens
 
 if __name__ == "__main__":
 
-    if len(argv) < 3:
-        print "usage: main.py [database] [signal]"
-        exit()
+    parser = argparse.ArgumentParser(description='Classify audio.')
+    parser.add_argument(
+        'database', metavar='database', type=str,
+        help='Database to use.'
+    )
+    parser.add_argument(
+        'signal', metavar='signal', type=str,
+        help='Signal to classify'
+    )
 
-    database_name = argv[1]
-    database = Database(database_name)
-    
+    args = parser.parse_args()
+
+    database = Database(args.database)
     if database is None:
-        print "This database could not be loaded"
+        print 'This database could not be loaded'
+        parser.print_help()
         exit()
 
-    filename = argv[2]
-    print "Reading %s" % filename
-    signal = load_signal(filename)
-    
+    signal = load_signal(args.signal)
     if signal is None:
-        print "This audio file could not be loaded"
+        print 'This audio file could not be loaded'
+        parser.print_help()
         exit()
 
+    print 'Analyzing {}...'.format(signal.get_filename())
     tokens = get_tokens(signal)
+
+    print 'Reading database \'{}\'...'.format(str(database))
     classifier = database.as_classifier()
 
     print "Classifying..."
     match = classifier.classify(tokens)
-    
+
     if match:
-        print "File {} matches with database entry {}".format(filename, match)
+        print "File {} matches with database entry {}".format(
+            signal.filename, match
+        )
     else:
-        print "File {} could not be matched".format(filename)
+        print "File {} could not be matched".format(signal.filename)
