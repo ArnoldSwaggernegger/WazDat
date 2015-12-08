@@ -8,19 +8,8 @@ hashes are more or less the same.
 import numpy as np
 
 
-def similar(a, b):
-    '''
-    This function returns whether two tokens a and b have similar
-    fingerprint.
-    '''
-    
-    frequency_margin = 8
-    time_margin = 2
-    
-    if (- frequency_margin <= a.fingerprint[0] - b.fingerprint[0] <= frequency_margin 
-        and - time_margin <= a.fingerprint[1] - b.fingerprint[1] <= time_margin):
-            return True
-    return False
+FREQUENCY_MARGIN = 4
+
 
 def sort_per_filename(matches):
     '''
@@ -64,10 +53,16 @@ class Token:
 class Classifier:
 
     def __init__(self):
-        self.tokens = []
+        self.tokens = {}
 
     def add_token(self, token):
-        self.tokens.append(token)
+    
+        p1, _, _ = token.fingerprint
+    
+        if p1 in self.tokens:
+            self.tokens[p1].append(token)
+        else:
+            self.tokens[p1] = [token]
 
     def classify(self, tokens):
 
@@ -82,10 +77,23 @@ class Classifier:
         # TODO: this part can be sped up using a hashtable-like ordening of
         # the collected tokens
 
-        for a in self.tokens:
-            for b in tokens:
-                if similar(a, b):
-                    matches.append((a, b))
+        for b in tokens:
+        
+            b1, b2, _ = b.fingerprint
+        
+            for index in xrange(b1 - FREQUENCY_MARGIN, b1 + FREQUENCY_MARGIN + 1):
+                
+                if not index in self.tokens:
+                    continue
+                
+                subset = self.tokens[index]
+                
+                for a in subset:
+                
+                    a1, a2, _ = a.fingerprint
+            
+                    if -FREQUENCY_MARGIN <= a2 - b2 <= +FREQUENCY_MARGIN:
+                        matches.append((a, b))
 
         ''' Sort all found matches based on original file. '''
         file_matches = sort_per_filename(matches)
