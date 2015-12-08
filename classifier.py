@@ -129,7 +129,7 @@ class Classifier:
                 best_matches.append((coverage, filename))
 
         if best_matches:
-            index = np.argmax(best_matches)
+            index = np.argmax([c for c, f in best_matches])
             return best_matches[index][1]
 
         return None
