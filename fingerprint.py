@@ -42,7 +42,7 @@ def get_fingerprints(signal, window_size, bin_size):
 
     result = []
     time_samples = get_spectogram(signal, window_size, bin_size)
-    #show_spectogram(time_samples)
+    show_spectogram(time_samples)
 
     width = time_samples.shape[1]
     prev_histogram = np.zeros(width)
@@ -84,7 +84,7 @@ def get_peaks(histogram):
 
     result = []
     for peak in peaks[:5]:
-        if peak[0] > 100:
+        if peak[0] > 0:
             result.append(peak[0])
     return result
     #return [peak[0] for peak in peaks[:5]]
