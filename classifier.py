@@ -99,6 +99,9 @@ class Classifier:
         ''' Check each possible file match. If the candidate has a match for at
             least 50% of the input tokens around the same time interval, it
             is very likely the correct match. '''
+            
+        best_matches = []
+            
         for filename, fmatches in file_matches.iteritems():
             #if len(fmatches) < 0.5 * len(tokens):
             #    continue
@@ -111,17 +114,22 @@ class Classifier:
             binsize = 0.5
             histogram, bins = np.histogram(dt, bins=np.arange(lower_bound - binsize, upper_bound + 3 * binsize, binsize))
 
+            """
             plt.title(filename)
             width = 0.7 * (bins[1] - bins[0])
             center = (bins[:-1] + bins[1:]) / 2
-            # plt.bar(center, histogram, align='center', width=width)
-            # plt.show()
+            plt.bar(center, histogram, align='center', width=width)
+            plt.show()
+            """
 
-            """ If the highest peak in the histogram combined with its 
-                neightbours cover at least 50% of the input tokens, this file
-                is likely the good match. """
             maxindex = np.argmax(histogram)
-            if np.sum(histogram[maxindex-1:maxindex+1]) >= 0.8 * len(fmatches):
-                return filename
+            
+            coverage = np.sum(histogram[maxindex-1:maxindex+1])
+            if coverage > 0.1:
+                best_matches.append((coverage, filename))
+
+        if best_matches:
+            index = np.argmax([c for c, f in best_matches])
+            return best_matches[index][1]
 
         return None
