@@ -47,7 +47,7 @@ if __name__ == "__main__":
         print 'Analyzing {}...'.format(signal.get_filename())
         tokens = get_tokens(signal)
 
-        print 'Reading database \'{}\'...'.format(str(database))
+        print 'Converting database to classifier...'
         classifier = database.as_classifier()
 
         print "Classifying..."
