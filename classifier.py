@@ -10,6 +10,7 @@ import database as db
 import matplotlib.pyplot as plt
 
 
+DT_MARGIN = 1
 FREQUENCY_MARGIN = 4
 
 
@@ -82,16 +83,17 @@ class Classifier:
         # the collected tokens
 
         for b in tokens:
-            b1, b2, _ = b.fingerprint
+            b1, b2, adt = b.fingerprint
             for index in xrange(b1 - FREQUENCY_MARGIN, b1 + FREQUENCY_MARGIN + 1):
                 if not index in self.tokens:
                     continue
                 
                 subset = self.tokens[index]
                 for a in subset:
-                    a1, a2, _ = a.fingerprint
-                    if -FREQUENCY_MARGIN <= a2 - b2 <= +FREQUENCY_MARGIN:
-                        matches.append((a, b))
+                    a1, a2, bdt = a.fingerprint
+                    if -DT_MARGIN <= adt - bdt <= +DT_MARGIN:
+                        if -FREQUENCY_MARGIN <= a2 - b2 <= +FREQUENCY_MARGIN:
+                            matches.append((a, b))
 
         ''' Sort all found matches based on original file. '''
         file_matches = sort_per_filename(matches)
