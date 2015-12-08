@@ -20,8 +20,8 @@ if __name__ == "__main__":
         help='Files to analyze and store in database as training.'
     )
     parser.add_argument(
-        'signal', metavar='signal', type=str,
-        help='Signal to classify.'
+        '-f', metavar='file', type=str,
+        help='File to classify.'
     )
 
     args = parser.parse_args()
@@ -36,9 +36,9 @@ if __name__ == "__main__":
     if args.train:
         database.populate(args.train)
 
-    signal = load_signal(args.signal)
+    signal = load_signal(args.file)
     if signal is None:
-        print 'This audio file could not be loaded'
+        print 'This file could not be loaded'
         parser.print_help()
         exit()
 

@@ -83,9 +83,7 @@ class Database:
     def _read_db(self):
         '''
         '''
-        if self._exists() and self.replace:
-            self._remove()
-        elif not self._exists():
+        if not self._exists():
             return []
 
         with open(self.name, "r") as file:
@@ -100,6 +98,9 @@ class Database:
 
         if not os.path.exists(self.DBPREFIX):
             os.makedirs(self.DBPREFIX)
+
+        if self._exists() and self.replace:
+            self._remove()
 
         with open(self.name, 'w+') as file:
             json.dump(self.database, file)
