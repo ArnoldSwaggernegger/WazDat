@@ -17,16 +17,11 @@ def get_tokens(signal, window_size=2048, bin_size=8):
     result = []
 
     leftoffset = 1
-    width = 10
-    height = 20
-    
-    print "signal duration = {}".format(signal.get_duration())
+    width = 4
+    height = 16
     
     for time, peaks in fingerprints:
-    
         realtime = time * float(window_size) / signal.get_samplerate()
-        print "realtime point {}".format(realtime)
-    
         for anchorpoint in peaks:
             minfreq = anchorpoint - height / 2
             maxfreq = anchorpoint + height / 2

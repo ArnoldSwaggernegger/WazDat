@@ -10,8 +10,8 @@ import database as db
 import matplotlib.pyplot as plt
 
 
-DT_MARGIN = 1
-FREQUENCY_MARGIN = 4
+TIME_MARGIN = 1
+FREQUENCY_MARGIN = 2
 
 
 def sort_per_filename(matches):
@@ -60,9 +60,6 @@ class Classifier:
 
     def add_token(self, token):
         p1, _, _ = token.fingerprint
-        
-        #if token.filename != "training/track09_roerdomp.wav":
-        #print "Found match with a bird that is not a Roerdomp"
 
         if p1 in self.tokens:
             self.tokens[p1].append(token)
@@ -79,59 +76,49 @@ class Classifier:
         matches = []
 
         ''' Find all matches between input tokens and database tokens. '''
-        # TODO: this part can be sped up using a hashtable-like ordening of
-        # the collected tokens
 
         for b in tokens:
-            b1, b2, adt = b.fingerprint
+            b1, b2, b3 = b.fingerprint
             for index in xrange(b1 - FREQUENCY_MARGIN, b1 + FREQUENCY_MARGIN + 1):
                 if not index in self.tokens:
                     continue
                 
-                subset = self.tokens[index]
-                for a in subset:
-                    a1, a2, bdt = a.fingerprint
-                    if -DT_MARGIN <= adt - bdt <= +DT_MARGIN:
-                        if -FREQUENCY_MARGIN <= a2 - b2 <= +FREQUENCY_MARGIN:
-                            matches.append((a, b))
+                for a in self.tokens[index]:
+                    a1, a2, a3 = a.fingerprint
+                    if -TIME_MARGIN <= a3 - b3 <= +TIME_MARGIN and -FREQUENCY_MARGIN <= a2 - b2 <= +FREQUENCY_MARGIN:
+                        matches.append((a, b))
 
         ''' Sort all found matches based on original file. '''
         file_matches = sort_per_filename(matches)
+        del matches
 
         ''' Check each possible file match. If the candidate has a match for at
             least 50% of the input tokens around the same time interval, it
             is very likely the correct match. '''
             
-        best_matches = []
+        best_match = None
+        threshold = 0.5 * len(tokens)
             
         for filename, fmatches in file_matches.iteritems():
-            #if len(fmatches) < 0.5 * len(tokens):
-            #    continue
+            
+            if len(fmatches) < threshold:
+                continue
+            
             dt = [match[0].time - match[1].time for match in fmatches]
             upper_bound = np.ceil(np.max(dt))
             lower_bound = np.floor(np.min(dt))
              
             """ Create a histogram with binsize 1. The two additional bins at 
                 the edges are to make sure the next step always goes well. """
-            binsize = 0.5
+            binsize = 0.1
             histogram, bins = np.histogram(dt, bins=np.arange(lower_bound - binsize, upper_bound + 3 * binsize, binsize))
 
-            """
-            plt.title(filename)
-            width = 0.7 * (bins[1] - bins[0])
-            center = (bins[:-1] + bins[1:]) / 2
-            plt.bar(center, histogram, align='center', width=width)
-            plt.show()
-            """
-
             maxindex = np.argmax(histogram)
-            
             coverage = np.sum(histogram[maxindex-1:maxindex+1])
-            if coverage > 0.1:
-                best_matches.append((coverage, filename))
-
-        if best_matches:
-            index = np.argmax([c for c, f in best_matches])
-            return best_matches[index][1]
-
+            
+            if coverage > threshold and (best_match is None or coverage > best_match[1]):
+                best_match = (filename, coverage)
+                    
+        if best_match is not None:
+            return best_match[0]
         return None
