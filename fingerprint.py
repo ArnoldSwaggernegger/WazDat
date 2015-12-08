@@ -26,11 +26,7 @@ def get_tokens(signal, window_size=2048, bin_size=8):
             for searchtime in xrange(time + leftoffset, min(time + leftoffset + width, len(fingerprints))):
                 for matchpoint in fingerprints[searchtime][1]:
                     if minfreq <= matchpoint <= maxfreq:
-                        
-                        dt = (searchtime - time) * window_size / float(signal.samplerate)
-                        realtime = time * window_size / float(signal.samplerate)
-                    
-                        result.append(Token((anchorpoint, matchpoint, dt), realtime, signal.get_filename()))
+                        result.append(Token((anchorpoint, matchpoint, searchtime - time), time, signal.get_filename()))
 
     return result
 
@@ -42,34 +38,16 @@ def get_fingerprints(signal, window_size, bin_size):
 
     result = []
     time_samples = get_spectogram(signal, window_size, bin_size)
-    show_spectogram(time_samples)
+    #show_spectogram(time_samples)
 
     width = time_samples.shape[1]
-    prev_histogram = np.zeros(width)
+    #prev_histogram = np.zeros(width)
     for time, histogram in enumerate(time_samples):
-        peaks = get_peaks(histogram - prev_histogram)
+        peaks = get_peaks(histogram)
         result.append((time, peaks))
         
         #TODO: Implement something like in the 3rd article with a guassian blur at peaks
-        prev_histogram = histogram
-
-    return result
-
-
-def get_spectogram(signal, window_size):
-    result = []
-    samples = signal.get_samples()
-
-    for i in range(0, len(samples)-window_size, window_size):
-        window = zero_padded_window(window_size)
-        partial_signal = window * samples[i:i+window_size]
-        spectrum = np.fft.rfft(partial_signal)
-
-        frequencies = np.fft.rfftfreq(
-            len(partial_signal), 1.0 / signal.get_samplerate()
-        )
-
-        result.append((i * signal.get_duration() / float(window_size), frequencies, np.abs(spectgrum)))
+        #prev_histogram = histogram
 
     return result
 
@@ -84,7 +62,7 @@ def get_peaks(histogram):
 
     result = []
     for peak in peaks[:5]:
-        if peak[0] > 100:
+        if peak[1] > 5:
             result.append(peak[0])
     return result
     #return [peak[0] for peak in peaks[:5]]
