@@ -9,26 +9,34 @@ from fingerprint import get_tokens
 # make this program generic:
 # requires: database-filename, file expression 
 # the second might be hard as terminals automatically expand *
+
+
 def remove_old(name):
+    '''
+    '''
     if path.isfile("/databases" + name):
         remove("/databases" + name)
 
+
 def find_wav_files(directory):
+    '''
+    '''
     return glob(directory + "*.wav")
 
+
 class Create_Database:
-    """
-    define name, training set directory and database object of the new database 
-    """
+    '''
+    '''
+
     def __init__(self, name, directory):
         self.name = name
         self.directory = directory
         self.database = Database(name)
     
-    """
-    create a new database from 
-    """
     def new_database(self):
+        '''
+        create a new database from 
+        '''
         remove_old(self.name)
 
         audio_files = find_wav_files(self.directory)
