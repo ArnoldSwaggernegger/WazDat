@@ -12,7 +12,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Classify audio.')
     parser.add_argument(
-        '-d', metavar='database', type=str,
+        '-d', metavar='database', type=str, required=True,
         help='Database to use.'
     )
     parser.add_argument(
@@ -47,7 +47,7 @@ if __name__ == "__main__":
         print 'Analyzing {}...'.format(signal.get_filename())
         tokens = get_tokens(signal)
 
-        print 'Reading database \'{}\'...'.format(str(database))
+        print 'Converting database to classifier...'
         classifier = database.as_classifier()
 
         print "Classifying..."
