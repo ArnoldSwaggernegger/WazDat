@@ -1,4 +1,4 @@
-from os import remove
+from os import remove, path
 from database import Database
 from soundfiles import find_files, load_signal
 from fingerprint import get_tokens
@@ -9,11 +9,12 @@ from fingerprint import get_tokens
 # the second might be hard as terminals automatically expand *
 
 if __name__ == "__main__":
+    if path.isfile(Database.DBPREFIX + "vogels"):
+        remove(Database.DBPREFIX + "vogels") 
 
-    remove(Database.DBPREFIX + "vogels") 
     database = Database("vogels")
     
-    for filename in ["training/track01_ijsvogel.wav"]: #find_files("training/*.wav"):
+    for filename in ["training/track01_ijsvogel.wav", "training/track03_goudvink.wav", "training/track09_roerdomp.wav"]: #find_files("training/*.wav"):
         with open(filename, "r") as f:
             print "Reading {}".format(filename)
             signal = load_signal(filename)

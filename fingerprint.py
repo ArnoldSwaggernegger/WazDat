@@ -12,13 +12,13 @@ from scipy.io.wavfile import read
 from classifier import Token
 
 
-def get_tokens(signal, window_size=1024, bin_size=1):
+def get_tokens(signal, window_size=2048, bin_size=8):
     fingerprints = get_fingerprints(signal, window_size, bin_size)
     result = []
 
-    leftoffset = 2
-    width = 3
-    height = 48
+    leftoffset = 1
+    width = 2
+    height = 30
     for time, peaks in fingerprints:
         for anchorpoint in peaks:
             minfreq = anchorpoint - height / 2
@@ -26,23 +26,32 @@ def get_tokens(signal, window_size=1024, bin_size=1):
             for searchtime in xrange(time + leftoffset, min(time + leftoffset + width, len(fingerprints))):
                 for matchpoint in fingerprints[searchtime][1]:
                     if minfreq <= matchpoint <= maxfreq:
-                        result.append(Token((anchorpoint, matchpoint, searchtime - time), time, signal.get_filename()))
+                        
+                        dt = (searchtime - time) * window_size / float(signal.samplerate)
+                        realtime = time * window_size / float(signal.samplerate)
+                    
+                        result.append(Token((anchorpoint, matchpoint, dt), realtime, signal.get_filename()))
 
     return result
 
 
-def get_fingerprints(signal, window_size=1024, bin_size=1):
+def get_fingerprints(signal, window_size, bin_size):
     '''
     get spectrogram peaks as (time, frequency) points
     '''
 
     result = []
     time_samples = get_spectogram(signal, window_size, bin_size)
+    #show_spectogram(time_samples)
 
-    #print time_samples
+    width = time_samples.shape[1]
+    prev_histogram = np.zeros(width)
     for time, histogram in enumerate(time_samples):
-        #print time, histogram
-        result.append((time, get_peaks(histogram)))
+        peaks = get_peaks(histogram - prev_histogram)
+        result.append((time, peaks))
+        
+        #TODO: Implement something like in the 3rd article with a guassian blur at peaks
+        prev_histogram = histogram
 
     return result
 
@@ -73,7 +82,12 @@ def get_peaks(histogram):
     peaks = [(i, histogram[i]) for i in location_peaks]
     peaks = sorted(peaks, key=lambda pair: pair[1], reverse=True)
 
-    return [peak[0] for peak in peaks[:5]]
+    result = []
+    for peak in peaks[:5]:
+        if peak[0] > 100:
+            result.append(peak[0])
+    return result
+    #return [peak[0] for peak in peaks[:5]]
 
 
 def get_spectogram(signal, window_size, bin_size):
@@ -128,21 +142,20 @@ def show_spectogram(spectogram):
 
 if __name__ == "__main__":
     import soundfiles
-    signal = soundfiles.load_wav("audio/muziek.wav")
+    """signal = soundfiles.load_wav("training/track01_ijsvogel.wav")
+    spectogram = get_spectogram(signal, 1024, 1)
+    show_spectogram(spectogram)
 
-    """
-    for sample in spectogram[:3]:
-        (freqs, spectrum) = sample
-        plt.plot(freqs, spectrum)
-        plt.show()
-    show_spectogram(spectogram, 1.0 * len(signal.get_samples()) / signal.get_samplerate())
-    """
+    signal = soundfiles.load_wav("training/track03_goudvink.wav")
+    spectogram = get_spectogram(signal, 1024, 1)
+    show_spectogram(spectogram)"""
 
-
-    #fingers =  get_fingerprints(signal, 1024, 1)
-    hashes = get_tokens(signal, 1024, 1)
+    
+    #hashes = get_tokens(signal, 1024, 1)
     #print hashes
-    """time = []
+    signal = soundfiles.load_wav("training/track01_ijsvogel.wav")
+    fingers =  get_fingerprints(signal, 2048, 8)
+    time = []
     peaks = []
 
     for t, ps in fingers:
@@ -150,5 +163,17 @@ if __name__ == "__main__":
         peaks += ps
 
     plt.scatter(time, peaks)
-    plt.show()"""
+    plt.show()
+
+    signal = soundfiles.load_wav("training/track03_goudvink.wav")
+    fingers =  get_fingerprints(signal, 2048, 8)
+    time = []
+    peaks = []
+
+    for t, ps in fingers:
+        time  += [t] * len(ps)
+        peaks += ps
+
+    plt.scatter(time, peaks)
+    plt.show()
 
