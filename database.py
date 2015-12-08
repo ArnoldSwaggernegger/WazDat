@@ -9,11 +9,12 @@ class Database:
 
     DBPREFIX = 'databases/'
 
-    def __init__(self, name):
+    def __init__(self, name, replace=False):
         '''
         '''
         self.name = self.DBPREFIX + name
         self.database = self._read_db()
+        self.replace = replace
 
     def add(self, tokens):
         '''
@@ -44,6 +45,16 @@ class Database:
 
         return cl
 
+    def _exists(self):
+        '''
+        '''
+        return os.path.isfile(self.name)
+
+    def _remove(self):
+        '''
+        '''
+        os.remove(self.name)
+
     def _push_token(self, token):
         '''
         '''
@@ -52,8 +63,10 @@ class Database:
     def _read_db(self):
         '''
         '''
-        if not os.path.isfile(self.name):
+        if not self._exists():
             return []
+        elif self._exists() and self.replace:
+            self._remove()
 
         with open(self.name, "r") as file:
             try:
