@@ -12,7 +12,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Classify audio.')
     parser.add_argument(
-        '-d', metavar='database', type=str,
+        '-d', metavar='database', type=str, required=True,
         help='Database to use.'
     )
     parser.add_argument(
