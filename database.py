@@ -1,6 +1,8 @@
 import json
 import os
 import classifier
+import soundfiles
+import fingerprint
 
 
 class Database:
@@ -12,9 +14,9 @@ class Database:
     def __init__(self, name, replace=False):
         '''
         '''
+        self.replace = replace
         self.name = self.DBPREFIX + name
         self.database = self._read_db()
-        self.replace = replace
 
     def add(self, tokens):
         '''
@@ -45,6 +47,24 @@ class Database:
 
         return cl
 
+    def populate(self, directory):
+        '''
+        '''
+        audio_files = sorted(soundfiles.find_files(directory + '/*'))
+
+        print "Reading {} files".format(len(audio_files))
+
+        for filename in audio_files:
+            print "{}:\n - loading...".format(filename)
+            signal = soundfiles.load_signal(filename)
+
+            print " - analyzing..."
+            self.add(fingerprint.get_tokens(signal))
+
+        print "Writing database to disk..."
+        self.save()
+        print "Done!"
+
     def _exists(self):
         '''
         '''
@@ -63,10 +83,10 @@ class Database:
     def _read_db(self):
         '''
         '''
-        if not self._exists():
-            return []
-        elif self._exists() and self.replace:
+        if self._exists() and self.replace:
             self._remove()
+        elif not self._exists():
+            return []
 
         with open(self.name, "r") as file:
             try:

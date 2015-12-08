@@ -12,21 +12,29 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Classify audio.')
     parser.add_argument(
-        'database', metavar='database', type=str,
+        '-d', metavar='database', type=str,
         help='Database to use.'
     )
     parser.add_argument(
+        '--train', metavar='training files', type=str,
+        help='Files to analyze and store in database as training.'
+    )
+    parser.add_argument(
         'signal', metavar='signal', type=str,
-        help='Signal to classify'
+        help='Signal to classify.'
     )
 
     args = parser.parse_args()
 
-    database = Database(args.database)
+    replace = args.train is not None
+    database = Database(args.d, replace=replace)
     if database is None:
         print 'This database could not be loaded'
         parser.print_help()
         exit()
+
+    if args.train:
+        database.populate(args.train)
 
     signal = load_signal(args.signal)
     if signal is None:
