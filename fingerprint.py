@@ -40,7 +40,7 @@ def get_fingerprints(signal, window_size, bin_size):
 
     result = []
     time_samples = get_spectogram(signal, window_size, bin_size)
-    show_spectogram(time_samples)
+    #show_spectogram(time_samples)
 
     width = time_samples.shape[1]
     #prev_histogram = np.zeros(width)

@@ -10,8 +10,8 @@ import database as db
 import matplotlib.pyplot as plt
 
 
-TIME_MARGIN = 1
-FREQUENCY_MARGIN = 2
+TIME_MARGIN = 0
+FREQUENCY_MARGIN = 1
 
 
 def sort_per_filename(matches):
@@ -97,11 +97,13 @@ class Classifier:
             is very likely the correct match. '''
             
         best_match = None
-        threshold = 0.5 * len(tokens)
+        
+        threshold_coverage = 0.6 * len(tokens)
+        threshold_concentration = 0.4
             
         for filename, fmatches in file_matches.iteritems():
             
-            if len(fmatches) < threshold:
+            if len(fmatches) < threshold_coverage:
                 continue
             
             dt = [match[0].time - match[1].time for match in fmatches]
@@ -115,9 +117,21 @@ class Classifier:
 
             maxindex = np.argmax(histogram)
             coverage = np.sum(histogram[maxindex-1:maxindex+1])
+            concentration = float(coverage) / len(fmatches)
             
-            if coverage > threshold and (best_match is None or coverage > best_match[1]):
-                best_match = (filename, coverage)
+            #if filename == "training/pokemon/441.wav":
+            #    print coverage, concentration
+                
+            #if filename == "training/pokemon/441.wav":
+            #    width = 0.7 * (bins[1] - bins[0])
+            #    center = (bins[:-1] + bins[1:]) / 2
+            #    plt.bar(center, histogram, align='center', width=width)
+            #    ax = plt.gca()
+            #    ax.set_title(filename)
+            #    plt.show()
+            
+            if coverage > threshold_coverage and concentration > threshold_concentration and (best_match is None or concentration > best_match[1]):
+                best_match = (filename, concentration)
                     
         if best_match is not None:
             return best_match[0]
