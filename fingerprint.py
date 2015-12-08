@@ -26,7 +26,11 @@ def get_tokens(signal, window_size=2048, bin_size=8):
             for searchtime in xrange(time + leftoffset, min(time + leftoffset + width, len(fingerprints))):
                 for matchpoint in fingerprints[searchtime][1]:
                     if minfreq <= matchpoint <= maxfreq:
-                        result.append(Token((anchorpoint, matchpoint, searchtime - time), time, signal.get_filename()))
+                        
+                        dt = (searchtime - time) * window_size / float(signal.samplerate)
+                        realtime = time * window_size / float(signal.samplerate)
+                    
+                        result.append(Token((anchorpoint, matchpoint, dt), realtime, signal.get_filename()))
 
     return result
 

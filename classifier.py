@@ -9,22 +9,9 @@ import numpy as np
 import database as db
 import matplotlib.pyplot as plt
 
-def similar(a, b):
-    '''
-    This function returns whether two tokens a and b have similar
-    fingerprint.
-    '''
-    # TODO not made for sound fingerprints, which should be tuples of (df, dt)
-    #if -0.1 <= a.fingerprint - b.fingerprint <= 0.1:
-    #    return True
-    #return False
-    freq_margin = 10
-    if a.fingerprint[0] > b.fingerprint[0] - freq_margin and a.fingerprint[0] < b.fingerprint[0] + freq_margin:
-        if a.fingerprint[1] > b.fingerprint[1] - freq_margin and a.fingerprint[1] < b.fingerprint[1] + freq_margin:
-            if a.fingerprint[2] == b.fingerprint[2]:
-                return True
 
-    return False
+FREQUENCY_MARGIN = 4
+
 
 def sort_per_filename(matches):
     '''
@@ -68,10 +55,16 @@ class Token:
 class Classifier:
 
     def __init__(self):
-        self.tokens = []
+        self.tokens = {}
 
     def add_token(self, token):
-        self.tokens.append(token)
+    
+        p1, _, _ = token.fingerprint
+    
+        if p1 in self.tokens:
+            self.tokens[p1].append(token)
+        else:
+            self.tokens[p1] = [token]
 
     def classify(self, tokens):
 
@@ -86,10 +79,23 @@ class Classifier:
         # TODO: this part can be sped up using a hashtable-like ordening of
         # the collected tokens
 
-        for a in self.tokens:
-            for b in tokens:
-                if similar(a, b):
-                    matches.append((a, b))
+        for b in tokens:
+        
+            b1, b2, _ = b.fingerprint
+        
+            for index in xrange(b1 - FREQUENCY_MARGIN, b1 + FREQUENCY_MARGIN + 1):
+                
+                if not index in self.tokens:
+                    continue
+                
+                subset = self.tokens[index]
+                
+                for a in subset:
+                
+                    a1, a2, _ = a.fingerprint
+            
+                    if -FREQUENCY_MARGIN <= a2 - b2 <= +FREQUENCY_MARGIN:
+                        matches.append((a, b))
 
         ''' Sort all found matches based on original file. '''
         file_matches = sort_per_filename(matches)
@@ -124,34 +130,3 @@ class Classifier:
                 return filename
 
         return None
-
-
-if __name__ == "__main__":
-
-    cl = Classifier()
-
-    a = [Token(i * np.sin(2 * i), i, "a") for i in xrange(100)]
-    b = [Token(i * np.sin(3 * i), i, "b") for i in xrange(100)]
-    c = [Token(i * np.sin(5 * i), i, "c") for i in xrange(100)]
-    d = [Token(i * np.sin(7 * i), i, "d") for i in xrange(100)]
-    e = [Token(i * np.sin(11 * i), i, "e") for i in xrange(100)]
-
-    for i in a:
-        cl.add_token(i)
-    for i in b:
-        cl.add_token(i)
-    for i in c:
-        cl.add_token(i)
-    for i in d:
-        cl.add_token(i)
-    for i in e:
-        cl.add_token(i)
-
-    #database = db.Database('testtokens1')
-    #database.as_classifier()
-
-    print cl.classify(a[20:30])
-    print cl.classify(b[30:40])
-    print cl.classify(c[40:50])
-    print cl.classify(d[50:60])
-    print cl.classify(e[70:80])
