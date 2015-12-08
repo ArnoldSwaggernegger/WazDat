@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from scipy.signal import argrelextrema
 from scipy.io.wavfile import read
 
-from classifier import Token
+import classifier
 
 
 def get_tokens(signal, window_size=2048, bin_size=8):
@@ -19,14 +19,21 @@ def get_tokens(signal, window_size=2048, bin_size=8):
     leftoffset = 1
     width = 10
     height = 20
+    
+    print "signal duration = {}".format(signal.get_duration())
+    
     for time, peaks in fingerprints:
+    
+        realtime = time * float(window_size) / signal.get_samplerate()
+        print "realtime point {}".format(realtime)
+    
         for anchorpoint in peaks:
             minfreq = anchorpoint - height / 2
             maxfreq = anchorpoint + height / 2
             for searchtime in xrange(time + leftoffset, min(time + leftoffset + width, len(fingerprints))):
                 for matchpoint in fingerprints[searchtime][1]:
                     if minfreq <= matchpoint <= maxfreq:
-                        result.append(Token((anchorpoint, matchpoint, searchtime - time), time, signal.get_filename()))
+                        result.append(classifier.Token((anchorpoint, matchpoint, searchtime - time), realtime, signal.get_filename()))
 
     return result
 
@@ -139,6 +146,9 @@ if __name__ == "__main__":
     #hashes = get_tokens(signal, 1024, 1)
     #print hashes
     signal = soundfiles.load_wav("training/track01_ijsvogel.wav")
+    #tokens = signal.get_tokens()
+    
+    
     fingers =  get_fingerprints(signal, 2048, 8)
     time = []
     peaks = []
