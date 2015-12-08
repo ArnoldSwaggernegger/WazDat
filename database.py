@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 import classifier
 import soundfiles
 import fingerprint
@@ -52,16 +53,18 @@ class Database:
         '''
         audio_files = sorted(soundfiles.find_files(directory + '/*'))
 
-        print "Reading {} files".format(len(audio_files))
+        print "Reading {} files...".format(len(audio_files))
 
+        i = 0
         for filename in audio_files:
-            print "{}:\n - loading...".format(filename)
+            i += 1
+            sys.stdout.write(
+                '\r - file ' + str(i) + ' of ' + str(len(audio_files))
+            )
             signal = soundfiles.load_signal(filename)
-
-            print " - analyzing..."
             self.add(fingerprint.get_tokens(signal))
 
-        print "Writing database to disk..."
+        print "\nWriting database to disk..."
         self.save()
         print "Done!"
 
