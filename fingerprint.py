@@ -17,8 +17,8 @@ def get_tokens(signal, window_size=2048, bin_size=8):
     result = []
 
     leftoffset = 1
-    width = 2
-    height = 30
+    width = 10
+    height = 20
     for time, peaks in fingerprints:
         for anchorpoint in peaks:
             minfreq = anchorpoint - height / 2
@@ -38,7 +38,7 @@ def get_fingerprints(signal, window_size, bin_size):
 
     result = []
     time_samples = get_spectogram(signal, window_size, bin_size)
-    #show_spectogram(time_samples)
+    show_spectogram(time_samples)
 
     width = time_samples.shape[1]
     #prev_histogram = np.zeros(width)
@@ -62,7 +62,7 @@ def get_peaks(histogram):
 
     result = []
     for peak in peaks[:5]:
-        if peak[1] > 5:
+        if peak[1] > 120:
             result.append(peak[0])
     return result
     #return [peak[0] for peak in peaks[:5]]
@@ -77,6 +77,13 @@ def get_spectogram(signal, window_size, bin_size):
     window = zero_padded_window(window_size)
 
     result = np.empty((width, height))
+
+    highpass_filter = np.zeros(height)
+    cutoff_frequency = 100
+    slope = 20
+    for i in xrange(cutoff_frequency):
+        highpass_filter[i] = 1.
+
     for t in range(0, width):
         partial_signal = window * samples[t*window_size:(t+1)*window_size]
         spectrum = np.fft.rfft(partial_signal)
@@ -85,7 +92,7 @@ def get_spectogram(signal, window_size, bin_size):
             sum = 0.0
             for offset in xrange(bin_size):
                 sum += np.abs(spectrum[bin*bin_size+offset])
-            result[t][height-bin-1] = sum
+            result[t][height-bin-1] = sum * highpass_filter[height-bin-1]
 
     return result
 
@@ -143,7 +150,7 @@ if __name__ == "__main__":
     plt.scatter(time, peaks, color="red")
     plt.show()
 
-    signal = soundfiles.load_wav("training/track03_goudvink.wav")
+    signal = soundfiles.load_wav("audio/ijsvogel.wav")
     fingers =  get_fingerprints(signal, 2048, 8)
     time = []
     peaks = []

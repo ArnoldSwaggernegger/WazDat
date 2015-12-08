@@ -80,7 +80,7 @@ def load_wav(filename):
 
     normalized_samples = combined_samples / maxvalue
 
-    desired_framerate = 8000.
+    desired_framerate = 16000.
     resampled_samples = resample(normalized_samples,
                                  desired_framerate / framerate, 'sinc_best')
 

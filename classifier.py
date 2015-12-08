@@ -58,9 +58,11 @@ class Classifier:
         self.tokens = {}
 
     def add_token(self, token):
-    
         p1, _, _ = token.fingerprint
-    
+        
+        #if token.filename != "training/track09_roerdomp.wav":
+        #print "Found match with a bird that is not a Roerdomp"
+
         if p1 in self.tokens:
             self.tokens[p1].append(token)
         else:
@@ -80,25 +82,21 @@ class Classifier:
         # the collected tokens
 
         for b in tokens:
-        
             b1, b2, _ = b.fingerprint
-        
             for index in xrange(b1 - FREQUENCY_MARGIN, b1 + FREQUENCY_MARGIN + 1):
-                
                 if not index in self.tokens:
                     continue
                 
                 subset = self.tokens[index]
-                
                 for a in subset:
-                
                     a1, a2, _ = a.fingerprint
-            
                     if -FREQUENCY_MARGIN <= a2 - b2 <= +FREQUENCY_MARGIN:
                         matches.append((a, b))
 
         ''' Sort all found matches based on original file. '''
         file_matches = sort_per_filename(matches)
+        print "Matches with: "
+        print file_matches.keys()
 
         ''' Check each possible file match. If the candidate has a match for at
             least 50% of the input tokens around the same time interval, it
@@ -106,7 +104,6 @@ class Classifier:
         for filename, fmatches in file_matches.iteritems():
             #if len(fmatches) < 0.5 * len(tokens):
             #    continue
-        
             dt = [match[0].time - match[1].time for match in fmatches]
             upper_bound = np.ceil(np.max(dt))
             lower_bound = np.floor(np.min(dt))
