@@ -21,7 +21,7 @@ def remove_old(name):
 def find_wav_files(directory):
     '''
     '''
-    return glob(directory + "*.wav")
+    return sorted(glob(directory + "*.wav"))
 
 
 class Create_Database:
