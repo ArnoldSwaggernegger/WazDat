@@ -129,21 +129,8 @@ def show_spectogram(spectogram):
 
 if __name__ == "__main__":
     import soundfiles
-    """signal = soundfiles.load_wav("training/track01_ijsvogel.wav")
-    spectogram = get_spectogram(signal, 1024, 1)
-    show_spectogram(spectogram)
-
-    signal = soundfiles.load_wav("training/track03_goudvink.wav")
-    spectogram = get_spectogram(signal, 1024, 1)
-    show_spectogram(spectogram)"""
-
     
-    #hashes = get_tokens(signal, 1024, 1)
-    #print hashes
-    signal = soundfiles.load_wav("training/track01_ijsvogel.wav")
-    #tokens = signal.get_tokens()
-    
-    
+    signal = soundfiles.load_wav("training/pokemon/003.wav")
     fingers =  get_fingerprints(signal, 2048, 8)
     time = []
     peaks = []
@@ -152,10 +139,11 @@ if __name__ == "__main__":
         time  += [t] * len(ps)
         peaks += ps
 
+    plt.subplot(221)
+    plt.title("original")
     plt.scatter(time, peaks, color="red")
-    plt.show()
 
-    signal = soundfiles.load_wav("audio/ijsvogel.wav")
+    signal = soundfiles.load_wav("audio/pokemon/003-multiplied.wav")
     fingers =  get_fingerprints(signal, 2048, 8)
     time = []
     peaks = []
@@ -164,6 +152,34 @@ if __name__ == "__main__":
         time  += [t] * len(ps)
         peaks += ps
 
+    plt.subplot(222)
+    plt.title("amplified")
+    plt.scatter(time, peaks, color="red")
+
+    signal = soundfiles.load_wav("audio/pokemon/003-translated.wav")
+    fingers =  get_fingerprints(signal, 2048, 8)
+    time = []
+    peaks = []
+
+    for t, ps in fingers:
+        time  += [t] * len(ps)
+        peaks += ps
+
+    plt.subplot(223)
+    plt.title("offset")
+    plt.scatter(time, peaks, color="red")
+
+    signal = soundfiles.load_wav("audio/pokemon/003-noise.wav")
+    fingers =  get_fingerprints(signal, 2048, 8)
+    time = []
+    peaks = []
+
+    for t, ps in fingers:
+        time  += [t] * len(ps)
+        peaks += ps
+
+    plt.subplot(224)
+    plt.title("noise")
     plt.scatter(time, peaks, color="red")
     plt.show()
 
