@@ -10,6 +10,7 @@ import sys
 import classifier
 import soundfiles
 import fingerprint
+import threading
 
 
 class Database:
@@ -17,7 +18,7 @@ class Database:
 
     DBPREFIX = 'databases/'
 
-    def __init__(self, name, replace=False):
+    def __init__(self, name, replace=False, read=True):
         '''
         Database initializer. Reads database if exists.
 
@@ -26,8 +27,12 @@ class Database:
             replace: whether to replace or append database.
         '''
         self.replace = replace
+        self.read = read
         self.name = self.DBPREFIX + name
-        self.database = self._read_db()
+        if read:
+            self.database = self._read_db()
+        else:
+            self.database = []
 
     def add(self, tokens):
         '''
@@ -45,6 +50,10 @@ class Database:
     def save(self):
         '''Wrapper for internal write.'''
         self._write_db()
+
+    def load(self):
+        '''Wrapper for internal read.'''
+        self._read_db()
 
     def as_classifier(self):
         '''
@@ -65,7 +74,7 @@ class Database:
 
         return cl
 
-    def populate(self, directory):
+    def populate(self, directory, num_threads=8):
         '''
         Analyzes all audio files in a directory and add their fingerprint
         to the database. Writes result to disk when done.
@@ -73,22 +82,61 @@ class Database:
         Args:
             directory: directory containing audio files.
         '''
+
+        print "Expanding audio file glob..."
         audio_files = sorted(soundfiles.find_files(directory + '/*'))
 
-        print "Reading {} files...".format(len(audio_files))
+        print "Found {} files. Loading...".format(len(audio_files))
+        # signals = []
+        # i = 0
+        # for filename in audio_files:
+        #     i += 1
+        #     sys.stdout.write(
+        #         '\r - file ' + str(i) + ' of ' + str(len(audio_files))
+        #     )
+        #     signals.append(soundfiles.load_signal(filename))
 
-        i = 0
-        for filename in audio_files:
-            i += 1
-            sys.stdout.write(
-                '\r - file ' + str(i) + ' of ' + str(len(audio_files))
+        lock = threading.Lock()
+
+        print "Building {} threads...".format(num_threads)
+        threads = []
+        part_size = len(audio_files) / num_threads
+        for n in range(num_threads):
+            part1 = n * part_size
+            if n == (num_threads - 1):
+                part2 = len(audio_files) - 1
+            else:
+                part2 = (n + 1) * part_size
+
+            thread = threading.Thread(
+                target=self._analyze_files,
+                args=[audio_files[part1:part2], lock]
             )
-            signal = soundfiles.load_signal(filename)
-            self.add(fingerprint.get_tokens(signal))
+            thread.daemon = True
+            threads.append(thread)
 
-        print "\nWriting database to disk..."
+        print "Starting {} threads...".format(num_threads)
+        for thread in threads:
+            thread.start()
+
+        print "Working..."
+        for thread in threads:
+            thread.join()
+
+        print "Writing database to disk..."
         self.save()
         print "Done!"
+
+    def _analyze_files(self, audio_files, lock):
+        '''
+        '''
+        local_buffer = []
+        for filename in audio_files:
+            signal = soundfiles.load_signal(filename)
+            local_buffer.extend(fingerprint.get_tokens(signal))
+
+        with lock:
+            self.add(local_buffer)
 
     def _exists(self):
         '''Returns whether the current database exists.'''
