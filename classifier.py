@@ -95,7 +95,7 @@ class Classifier:
         best_match = None
         
         threshold_coverage = 0.8 * len(tokens)
-        threshold_concentration = 0.4
+        threshold_concentration = 0.3
             
         for filename, fmatches in file_matches.iteritems():
             
@@ -108,7 +108,7 @@ class Classifier:
              
             """ Create a histogram with binsize 1. The two additional bins at 
                 the edges are to make sure the next step always goes well. """
-            binsize = 0.01
+            binsize = 0.1
             histogram, bins = np.histogram(dt, bins=np.arange(lower_bound - binsize, upper_bound + 3 * binsize, binsize))
 
             maxindex = np.argmax(histogram)
