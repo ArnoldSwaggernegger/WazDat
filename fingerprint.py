@@ -46,13 +46,6 @@ def get_fingerprints(signal, window_size, bin_size):
     for time, histogram in enumerate(time_samples):
         peaks = get_peaks(histogram - prev_histogram - 25)
         result.append((time, peaks))
-        
-        if False and time > 0 and time < 5:
-            x1, = plt.plot(histogram)
-            x2, = plt.plot(prev_histogram)
-            x3, = plt.plot(histogram - prev_histogram)
-            plt.legend((x1, x2, x3), ("Current histogram", "Blurred previous histogram", "Tested histogram"))
-            plt.show()
 
         #TODO: Implement something like in the 3rd article with a guassian blur at peaks
         prev_histogram = np.zeros(width)
