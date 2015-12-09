@@ -28,7 +28,7 @@ if __name__ == "__main__":
 
     replace = args.train is not None
     print 'Reading database {}...'.format(args.d)
-    database = Database(args.d, replace=replace)
+    database = Database(args.d, replace=replace, read=False)
     if database is None:
         print 'This database could not be loaded'
         parser.print_help()
@@ -38,24 +38,29 @@ if __name__ == "__main__":
         database.populate(args.train)
 
     if args.f:
+        if database.read:
+            print 'Loading database from disk...'
+            database.load()
+
+        print 'Converting database to classifier...'
+        classifier = database.as_classifier()
+
+        print 'Loading \'{}\' from disk...'.format(args.f)
         signal = load_signal(args.f)
         if signal is None:
             print 'This file could not be loaded'
             parser.print_help()
             exit()
 
-        print 'Analyzing {}...'.format(signal.get_filename())
+        print 'Analyzing \'{}\'...'.format(signal.get_filename())
         tokens = get_tokens(signal)
-
-        print 'Converting database to classifier...'
-        classifier = database.as_classifier()
 
         print "Classifying..."
         match = classifier.classify(tokens)
 
         if match:
-            print "File {} matches with database entry {}".format(
+            print "File \'{}\' matches with database entry {}".format(
                 signal.filename, match
             )
         else:
-            print "File {} could not be matched".format(signal.filename)
+            print "File \'{}\' could not be matched".format(signal.filename)

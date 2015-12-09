@@ -17,7 +17,7 @@ class Database:
 
     DBPREFIX = 'databases/'
 
-    def __init__(self, name, replace=False):
+    def __init__(self, name, replace=False, read=True):
         '''
         Database initializer. Reads database if exists.
 
@@ -26,8 +26,13 @@ class Database:
             replace: whether to replace or append database.
         '''
         self.replace = replace
+        self.read = read
         self.name = self.DBPREFIX + name
-        self.database = self._read_db()
+
+        if read:
+            self.database = self.load()
+        else:
+            self.database = []
 
     def add(self, tokens):
         '''
@@ -45,6 +50,10 @@ class Database:
     def save(self):
         '''Wrapper for internal write.'''
         self._write_db()
+
+    def load(self):
+        '''Wrapper for internal read.'''
+        return self._read_db()
 
     def as_classifier(self):
         '''
