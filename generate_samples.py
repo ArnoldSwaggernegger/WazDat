@@ -21,31 +21,26 @@ for f in files:
 	suffix = ""
 	new_samples = signal.samples
 
-	if random.random() < 10.5:
+	if random.random() < 0.5:
 		'''
 		add noise
 		'''
-		for i in range(len(new_samples)):
-			new_samples[i] += (0.05 - 0.1 * random.random())
-			
-		suffix += "-noise"
+        new_samples += 0.05 - 0.1 * np.random.rand(len(new_samples))
+        suffix += "-noise"
 
-	if random.random() < 10.5:
+	if random.random() < 0.5:
 		'''
 		add amplification
 		'''
-		amp = 1-(random.random()*0.5)
-		for i in range(len(new_samples)):
-			new_samples[i] *= amp
-
+		new_samples *= 0.5 + (0.5 * random.random())
 		suffix += "-amp"
 
-	if random.random() < 1.5:
+	if random.random() < 0.5:
 		'''
 		add offset
 		'''
-		offset = random.random()*20000
-		new_samples = np.append(np.zeros(offset),(new_samples))
+		offset = int(random.random() * 16384)
+		new_samples = np.append(np.zeros(offset), (new_samples))
 
 		suffix += "-offset"
 	
@@ -62,7 +57,3 @@ for f in files:
 	wav.setparams((1, 4, signal.samplerate, len(new_samples), 'NONE', 'not defined'))
 
 	wav.writeframesraw(new_samples)
-
-
-
-
