@@ -24,6 +24,7 @@ class Database:
         Args:
             name: name of database.
             replace: whether to replace or append database.
+            read: whether to load the databse from disk on init.
         '''
         self.replace = replace
         self.read = read
