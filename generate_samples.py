@@ -3,6 +3,10 @@ import random
 import matplotlib.pyplot as plt
 import wave
 import numpy as np
+import os
+
+if not os.path.exists("audio/pokemon"):
+    os.makedirs("audio/pokemon")
 
 directory = "training/pokemon/*.wav"
 

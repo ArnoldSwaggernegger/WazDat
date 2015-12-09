@@ -126,8 +126,8 @@ class Classifier:
             ax.set_title(filename)
             plt.show()"""
             
-            if coverage > threshold_coverage and concentration > threshold_concentration and (best_match is None or concentration > best_match[1]):
-                best_match = (filename, concentration)
+            if coverage > threshold_coverage and concentration > threshold_concentration and (best_match is None or coverage > best_match[1]):
+                best_match = (filename, coverage)
                     
         if best_match is not None:
             return best_match[0]
