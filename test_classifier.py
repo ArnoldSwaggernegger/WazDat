@@ -4,7 +4,7 @@ from fingerprint import get_tokens
 import matplotlib.pyplot as plt
 from random import shuffle
 
-n = 100
+n = 600
 
 print "Start testing classifier with {} files\n".format(n)
 
