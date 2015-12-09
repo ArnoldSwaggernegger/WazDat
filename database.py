@@ -1,3 +1,9 @@
+'''
+database.py
+
+This file contains a simple JSON storage class.
+'''
+
 import json
 import os
 import sys
@@ -7,13 +13,17 @@ import fingerprint
 
 
 class Database:
-    '''
-    '''
+    '''A simple JSON storage system.'''
 
     DBPREFIX = 'databases/'
 
     def __init__(self, name, replace=False):
         '''
+        Database initializer. Reads database if exists.
+
+        Args:
+            name: name of database.
+            replace: whether to replace or append database.
         '''
         self.replace = replace
         self.name = self.DBPREFIX + name
@@ -21,6 +31,10 @@ class Database:
 
     def add(self, tokens):
         '''
+        Pushes a singleton or list of tokens to the database.
+
+        Args:
+            tokens: Token or list of Token.
         '''
         if not isinstance(tokens, list):
             tokens = [tokens]
@@ -29,12 +43,15 @@ class Database:
             self._push_token(token)
 
     def save(self):
-        '''
-        '''
+        '''Wrapper for internal write.'''
         self._write_db()
 
     def as_classifier(self):
         '''
+        Build a Classifier from database.
+
+        Returns:
+            Classifier populated with Tokens from database.
         '''
         cl = classifier.Classifier()
         for entry in self.database:
@@ -50,6 +67,11 @@ class Database:
 
     def populate(self, directory):
         '''
+        Analyzes all audio files in a directory and add their fingerprint
+        to the database. Writes result to disk when done.
+
+        Args:
+            directory: directory containing audio files.
         '''
         audio_files = sorted(soundfiles.find_files(directory + '/*'))
 
@@ -69,22 +91,29 @@ class Database:
         print "Done!"
 
     def _exists(self):
-        '''
-        '''
+        '''Returns whether the current database exists.'''
         return os.path.isfile(self.name)
 
     def _remove(self):
-        '''
-        '''
-        os.remove(self.name)
+        '''Removes the database file if exists.'''
+        if self._exists():
+            os.remove(self.name)
 
     def _push_token(self, token):
         '''
+        Pushes a token to the database.
+
+        Args:
+            token: Token.
         '''
         self.database.append(token.as_dict())
 
     def _read_db(self):
         '''
+        Read the stored database JSON.
+
+        Returns:
+            JSON content of file.
         '''
         if not self._exists():
             return []
@@ -96,8 +125,7 @@ class Database:
                 return []
 
     def _write_db(self):
-        '''
-        '''
+        '''Write database to disk.'''
 
         if not os.path.exists(self.DBPREFIX):
             os.makedirs(self.DBPREFIX)
@@ -109,6 +137,5 @@ class Database:
             json.dump(self.database, file)
 
     def __str__(self):
-        '''
-        '''
+        '''Returns database name.'''
         return self.name
