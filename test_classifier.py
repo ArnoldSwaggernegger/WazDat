@@ -4,7 +4,7 @@ from fingerprint import get_tokens
 import matplotlib.pyplot as plt
 from random import shuffle
 
-n = 10
+n = 100
 
 print "Start testing classifier with {} files\n".format(n)
 
@@ -39,7 +39,7 @@ print "{} correct".format(correct_match)
 print "{} wrong".format(wrong_match)
 print "{} not matched".format(no_match)
 
-plt.pie([correct_match, no_match, wrong_match], labels=["Correct match", "No match", "Wrong match"], colors=["yellowgreen", "yellow", "red"], startangle=90, shadow=True)
+plt.pie([correct_match, no_match, wrong_match], labels=["Correct match", "No match", "Wrong match"], colors=["yellowgreen", "yellow", "red"], startangle=90, shadow=False)
 plt.axis('equal')
 plt.show()  
 
