@@ -79,6 +79,8 @@ def load_wav(filename):
         combined_samples = np.choose(condition, [a, b])
 
     normalized_samples = combined_samples / maxvalue
+    if dtype == np.uint8:
+        normalized_samples = 2 * normalized_samples - 1
 
     desired_framerate = 2048. * 10
     resampled_samples = resample(normalized_samples,

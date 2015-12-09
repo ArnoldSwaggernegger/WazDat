@@ -11,6 +11,7 @@ for i in signal:
 
 plt.subplot(411)
 plt.title("original")
+plt.ylim(-1,1)
 plt.plot(x)
 
 '''
@@ -35,6 +36,7 @@ for i in signal:
 
 plt.subplot(412)
 plt.title("divided")
+plt.ylim(-1,1)
 plt.plot(x)
 
 '''
@@ -60,6 +62,7 @@ for i in signal:
 plt.subplot(413)
 plt.title("offset")
 plt.xlim(20480,40480)
+plt.ylim(-1,1)
 plt.plot(x)
 
 '''
@@ -84,6 +87,7 @@ for i in signal:
 
 plt.subplot(414)
 plt.title("noise")
+plt.ylim(-1,1)
 plt.plot(x)
 plt.show()
 
