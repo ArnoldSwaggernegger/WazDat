@@ -94,8 +94,8 @@ class Classifier:
             
         best_match = None
         
-        threshold_coverage = 0.8 * len(tokens)
-        threshold_concentration = 0.3
+        threshold_coverage = 0.4 * len(tokens)
+        threshold_concentration = 0.2
             
         for filename, fmatches in file_matches.iteritems():
             
