@@ -21,16 +21,16 @@ for f in files:
 	suffix = ""
 	new_samples = signal.samples
 
-	if random.random() < 0.5:
+	if random.random() < 10.5:
 		'''
 		add noise
 		'''
 		for i in range(len(new_samples)):
-			new_samples[i] += (0.5 - random.random())*0.1
+			new_samples[i] += (0.05 - 0.1 * random.random())
 			
 		suffix += "-noise"
 
-	if random.random() < 0.5:
+	if random.random() < 10.5:
 		'''
 		add amplification
 		'''
@@ -40,7 +40,7 @@ for f in files:
 
 		suffix += "-amp"
 
-	if random.random() < 0.5:
+	if random.random() < 1.5:
 		'''
 		add offset
 		'''
