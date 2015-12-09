@@ -108,7 +108,7 @@ class Classifier:
              
             """ Create a histogram with binsize 1. The two additional bins at 
                 the edges are to make sure the next step always goes well. """
-            binsize = 0.1
+            binsize = 0.01
             histogram, bins = np.histogram(dt, bins=np.arange(lower_bound - binsize, upper_bound + 3 * binsize, binsize))
 
             maxindex = np.argmax(histogram)
@@ -119,12 +119,12 @@ class Classifier:
             #    print coverage, concentration
                 
             #if filename == "training/pokemon/441.wav":
-            #    width = 0.7 * (bins[1] - bins[0])
-            #    center = (bins[:-1] + bins[1:]) / 2
-            #    plt.bar(center, histogram, align='center', width=width)
-            #    ax = plt.gca()
-            #    ax.set_title(filename)
-            #    plt.show()
+            """width = 0.7 * (bins[1] - bins[0])
+            center = (bins[:-1] + bins[1:]) / 2
+            plt.bar(center, histogram, align='center', width=width)
+            ax = plt.gca()
+            ax.set_title(filename)
+            plt.show()"""
             
             if coverage > threshold_coverage and concentration > threshold_concentration and (best_match is None or concentration > best_match[1]):
                 best_match = (filename, concentration)

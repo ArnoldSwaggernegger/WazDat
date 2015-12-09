@@ -82,7 +82,7 @@ def load_wav(filename):
     if dtype == np.uint8:
         normalized_samples = 2 * normalized_samples - 1
 
-    desired_framerate = 2048. * 10
+    desired_framerate = 16384.
     resampled_samples = resample(normalized_samples,
                                  desired_framerate / framerate, 'sinc_best')
 

@@ -12,7 +12,7 @@ from scipy.ndimage.filters import gaussian_filter
 import classifier
 
 
-def get_tokens(signal, window_size=2048, bin_size=8):
+def get_tokens(signal, window_size=1024, bin_size=2):
     fingerprints = get_fingerprints(signal, window_size, bin_size)
     result = []
 
@@ -33,7 +33,7 @@ def get_tokens(signal, window_size=2048, bin_size=8):
     return result
 
 
-def get_fingerprints(signal, window_size=2048, bin_size=8):
+def get_fingerprints(signal, window_size, bin_size):
     '''
     get spectrogram peaks as (time, frequency) points
     '''
@@ -154,8 +154,8 @@ if __name__ == "__main__":
     plt.scatter(time, peaks, color="red")
     plt.show()"""
 
-    signal = soundfiles.load_wav("audio/pokemon/001.wav")
-    fingers =  get_fingerprints(signal, 2048, 8)
+    signal = soundfiles.load_wav("training/pokemon/430.wav")
+    fingers =  get_fingerprints(signal, 2048, 2)
     time = []
     peaks = []
 
