@@ -4,10 +4,10 @@
 
 
 import numpy as np
-
 import matplotlib.pyplot as plt
 from scipy.signal import argrelextrema
 from scipy.io.wavfile import read
+from scipy.ndimage.filters import gaussian_filter
 
 import classifier
 
@@ -40,17 +40,28 @@ def get_fingerprints(signal, window_size=2048, bin_size=8):
 
     result = []
     time_samples = get_spectogram(signal, window_size, bin_size)
-    #show_spectogram(time_samples)
 
     width = time_samples.shape[1]
-    #prev_histogram = np.zeros(width)
+    prev_histogram = np.zeros(width)
     for time, histogram in enumerate(time_samples):
-        peaks = get_peaks(histogram)
+        peaks = get_peaks(histogram - prev_histogram - 25)
         result.append((time, peaks))
         
-        #TODO: Implement something like in the 3rd article with a guassian blur at peaks
-        #prev_histogram = histogram
+        if False and time > 0 and time < 5:
+            x1, = plt.plot(histogram)
+            x2, = plt.plot(prev_histogram)
+            x3, = plt.plot(histogram - prev_histogram)
+            plt.legend((x1, x2, x3), ("Current histogram", "Blurred previous histogram", "Tested histogram"))
+            plt.show()
 
+        #TODO: Implement something like in the 3rd article with a guassian blur at peaks
+        prev_histogram = np.zeros(width)
+        for peak in peaks:
+            prev_histogram[peak-1:peak+1] = histogram[peak-1:peak+1]
+        prev_histogram = gaussian_filter(prev_histogram, 2.)
+        prev_histogram *= 1#np.sum(histogram) / 50.0
+
+    show_spectogram(time_samples)
     return result
 
 
@@ -64,7 +75,7 @@ def get_peaks(histogram):
 
     result = []
     for peak in peaks[:5]:
-        if peak[1] > 120:
+        if peak[1] > 0 and peak[1] > 0.5 * peaks[0][1]:
             result.append(peak[0])
     return result
     #return [peak[0] for peak in peaks[:5]]
@@ -80,11 +91,11 @@ def get_spectogram(signal, window_size, bin_size):
 
     result = np.empty((width, height))
 
-    highpass_filter = np.zeros(height)
-    cutoff_frequency = 100
-    slope = 20
-    for i in xrange(cutoff_frequency):
-        highpass_filter[i] = 1.
+    #highpass_filter = np.zeros(height)
+    #cutoff_frequency = 100
+    #slope = 20
+    #for i in xrange(cutoff_frequency):
+    #    highpass_filter[i] = 1.
 
     for t in range(0, width):
         partial_signal = window * samples[t*window_size:(t+1)*window_size]
@@ -94,7 +105,7 @@ def get_spectogram(signal, window_size, bin_size):
             sum = 0.0
             for offset in xrange(bin_size):
                 sum += np.abs(spectrum[bin*bin_size+offset])
-            result[t][height-bin-1] = sum * highpass_filter[height-bin-1]
+            result[t][height-bin-1] = sum# * highpass_filter[height-bin-1]
 
     return result
 
@@ -120,7 +131,7 @@ def hamming_window(length, index, size):
 def show_spectogram(spectogram):
     '''
     '''
-    plt.imshow(spectogram.T, aspect="auto")
+    plt.imshow(spectogram.T, aspect="auto", interpolation="none")
     ax = plt.gca()
     ax.set_xlabel("Time")
     ax.set_ylabel("Frequencies")
@@ -129,20 +140,8 @@ def show_spectogram(spectogram):
 
 if __name__ == "__main__":
     import soundfiles
-    """signal = soundfiles.load_wav("training/track01_ijsvogel.wav")
-    spectogram = get_spectogram(signal, 1024, 1)
-    show_spectogram(spectogram)
 
-    signal = soundfiles.load_wav("training/track03_goudvink.wav")
-    spectogram = get_spectogram(signal, 1024, 1)
-    show_spectogram(spectogram)"""
-
-    
-    #hashes = get_tokens(signal, 1024, 1)
-    #print hashes
-    signal = soundfiles.load_wav("training/track01_ijsvogel.wav")
-    #tokens = signal.get_tokens()
-    
+    """signal = soundfiles.load_wav("training/track01_ijsvogel.wav")    
     
     fingers =  get_fingerprints(signal, 2048, 8)
     time = []
@@ -153,9 +152,9 @@ if __name__ == "__main__":
         peaks += ps
 
     plt.scatter(time, peaks, color="red")
-    plt.show()
+    plt.show()"""
 
-    signal = soundfiles.load_wav("audio/ijsvogel.wav")
+    signal = soundfiles.load_wav("audio/pokemon/001.wav")
     fingers =  get_fingerprints(signal, 2048, 8)
     time = []
     peaks = []
