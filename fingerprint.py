@@ -33,7 +33,7 @@ def get_tokens(signal, window_size=2048, bin_size=8):
     return result
 
 
-def get_fingerprints(signal, window_size, bin_size):
+def get_fingerprints(signal, window_size=2048, bin_size=8):
     '''
     get spectrogram peaks as (time, frequency) points
     '''
