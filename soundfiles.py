@@ -57,7 +57,7 @@ def load_wav(filename):
 
     if samplewidth == 1:
         dtype = np.int8
-        maxvalue = 2 ** (8 - 1)
+        maxvalue = 2 ** 8
     elif samplewidth == 2:
         dtype = np.int16
         maxvalue = 2 ** (16 - 1)
