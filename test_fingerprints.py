@@ -6,7 +6,7 @@ pokemon_nr = "103" # "003"
 
 filenames = [
     "training/pokemon/{}.wav".format(pokemon_nr),
-    "audio/pokemon/{}-multiplied.wav".format(pokemon_nr),
+    "audio/pokemon/{}-divided.wav".format(pokemon_nr),
     "audio/pokemon/{}-noise.wav".format(pokemon_nr),
     "audio/pokemon/{}-translated.wav".format(pokemon_nr)
 ]

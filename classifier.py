@@ -10,10 +10,6 @@ import database as db
 import matplotlib.pyplot as plt
 
 
-TIME_MARGIN = 0
-FREQUENCY_MARGIN = 1
-
-
 def sort_per_filename(matches):
     '''
     This function sorts a list of tokens into a dictionary using the token
@@ -59,12 +55,15 @@ class Classifier:
         self.tokens = {}
 
     def add_token(self, token):
-        p1, _, _ = token.fingerprint
+        p1, p2, _ = token.fingerprint
 
         if p1 in self.tokens:
-            self.tokens[p1].append(token)
+            if p2 in self.tokens[p1]:
+                self.tokens[p1][p2].append(token)
+            else:
+                self.tokens[p1].update({p2: [token]})
         else:
-            self.tokens[p1] = [token]
+            self.tokens[p1] = {p2: [token]}
 
     def classify(self, tokens):
 
@@ -79,14 +78,11 @@ class Classifier:
 
         for b in tokens:
             b1, b2, b3 = b.fingerprint
-            for index in xrange(b1 - FREQUENCY_MARGIN, b1 + FREQUENCY_MARGIN + 1):
-                if not index in self.tokens:
-                    continue
-                
-                for a in self.tokens[index]:
+            if b1 in self.tokens and b2 in self.tokens[b1]:
+                for a in self.tokens[b1][b2]:
                     a1, a2, a3 = a.fingerprint
-                    if -TIME_MARGIN <= a3 - b3 <= +TIME_MARGIN and -FREQUENCY_MARGIN <= a2 - b2 <= +FREQUENCY_MARGIN:
-                        matches.append((a, b))
+                    if a3 == b3:
+                       matches.append((a, b)) 
 
         ''' Sort all found matches based on original file. '''
         file_matches = sort_per_filename(matches)
@@ -98,7 +94,7 @@ class Classifier:
             
         best_match = None
         
-        threshold_coverage = 0.6 * len(tokens)
+        threshold_coverage = 0.8 * len(tokens)
         threshold_concentration = 0.4
             
         for filename, fmatches in file_matches.iteritems():
