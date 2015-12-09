@@ -98,7 +98,7 @@ class Classifier:
             
         best_match = None
         
-        threshold_coverage = 0.6 * len(tokens)
+        threshold_coverage = 0.8 * len(tokens)
         threshold_concentration = 0.4
             
         for filename, fmatches in file_matches.iteritems():
