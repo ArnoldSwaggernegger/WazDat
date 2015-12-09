@@ -61,7 +61,7 @@ def get_fingerprints(signal, window_size=2048, bin_size=8):
         prev_histogram = gaussian_filter(prev_histogram, 2.)
         prev_histogram *= 1#np.sum(histogram) / 50.0
 
-    show_spectogram(time_samples)
+    #show_spectogram(time_samples)
     return result
 
 
