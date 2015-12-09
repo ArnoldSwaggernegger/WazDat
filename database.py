@@ -11,7 +11,7 @@ import classifier
 import soundfiles
 import fingerprint
 import threading
-
+import time
 
 class Database:
     '''A simple JSON storage system.'''
@@ -74,7 +74,7 @@ class Database:
 
         return cl
 
-    def populate(self, directory, num_threads=8):
+    def populate(self, directory, num_threads=1):
         '''
         Analyzes all audio files in a directory and add their fingerprint
         to the database. Writes result to disk when done.
@@ -131,12 +131,30 @@ class Database:
         '''
         '''
         local_buffer = []
+        load_sum = 0.0
+        local_buffer_sum = 0.0
+        wait_lock = 0.0
+        global_buffer = 0.0
         for filename in audio_files:
+            x = time.time()
             signal = soundfiles.load_signal(filename)
+            load_sum += time.time() - x
+            x = time.time()
             local_buffer.extend(fingerprint.get_tokens(signal))
+            local_buffer_sum += time.time() - x
 
+        x = time.time()
         with lock:
+            wait_lock = time.time() - x
+            x = time.time()
             self.add(local_buffer)
+            global_buffer = time.time() - x
+
+        print "Timing results:"
+        print "Loading files from disk (+resampling): \t\t%f" % load_sum
+        print "Getting tokens and adding to local array:\t%f" % local_buffer_sum
+        print "Waiting for lock to write to global array: \t%f" % wait_lock
+        print "Writing local results to global array: \t\t%f\n\n" % global_buffer
 
     def _exists(self):
         '''Returns whether the current database exists.'''
