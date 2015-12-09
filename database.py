@@ -6,10 +6,12 @@ This file contains a simple JSON storage class.
 
 import json
 import os
-import sys
 import classifier
 import soundfiles
 import fingerprint
+
+import colors
+c = colors.Colors()
 
 
 class Database:
@@ -85,20 +87,19 @@ class Database:
         '''
         audio_files = sorted(soundfiles.find_files(directory + '/*'))
 
-        print "Reading {} files...".format(len(audio_files))
+        c.notice("Reading {} files...".format(len(audio_files)))
 
         i = 0
         for filename in audio_files:
             i += 1
-            sys.stdout.write(
-                '\r - file ' + str(i) + ' of ' + str(len(audio_files))
-            )
+            c.write('\r\t-file ' + str(i) + ' of ' + str(len(audio_files)))
             signal = soundfiles.load_signal(filename)
             self.add(fingerprint.get_tokens(signal))
+        c.write("\n")
 
-        print "\nWriting database to disk..."
+        c.notice("Writing database to disk...")
         self.save()
-        print "Done!"
+        c.succes("Database written")
 
     def get_size(self):
         '''Returns current size of database'''

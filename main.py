@@ -9,6 +9,8 @@ from sys import exit
 from fingerprint import get_tokens
 
 if __name__ == "__main__":
+    import colors
+    c = colors.Colors()
 
     parser = argparse.ArgumentParser(description='Classify audio.')
     parser.add_argument(
@@ -27,10 +29,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     replace = args.train is not None
-    print 'Reading database {}...'.format(args.d)
+    c.notice('Reading database {}...'.format(args.d))
     database = Database(args.d, replace=replace, read=False)
     if database is None:
-        print 'This database could not be loaded'
+        c.fail('This database could not be loaded')
         parser.print_help()
         exit()
 
@@ -39,29 +41,31 @@ if __name__ == "__main__":
 
     if args.f:
         if not database.read:
-            print 'Loading database from disk...'
+            c.notice('Loading database from disk...')
             database.load()
-            print 'Loaded {} entries.'.format(database.get_size())
+            c.succes('Loaded {} entries.'.format(database.get_size()))
 
-        print 'Converting database to classifier...'
+        c.notice('Converting database to classifier...')
         classifier = database.as_classifier()
 
-        print 'Loading \'{}\' from disk...'.format(args.f)
+        c.notice('Loading \'{}\' from disk...'.format(args.f))
         signal = load_signal(args.f)
         if signal is None:
-            print 'This file could not be loaded'
+            c.fatal('This file could not be loaded')
             parser.print_help()
             exit()
 
-        print 'Analyzing \'{}\'...'.format(signal.get_filename())
+        c.notice('Analyzing \'{}\'...'.format(signal.get_filename()))
         tokens = get_tokens(signal)
 
-        print "Classifying..."
+        c.notice("Classifying...")
         match = classifier.classify(tokens)
 
         if match:
-            print "File \'{}\' matches with database entry {}".format(
+            c.notice("File \'{}\' matches with database entry {}".format(
                 signal.filename, match
-            )
+            ))
         else:
-            print "File \'{}\' could not be matched".format(signal.filename)
+            c.fatal(
+                "File \'{}\' could not be matched".format(signal.filename)
+            )
