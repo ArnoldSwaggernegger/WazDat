@@ -31,7 +31,7 @@ class Database:
         self.name = self.DBPREFIX + name
 
         if read:
-            self.database = self.load()
+            self.database = self._read_db()
         else:
             self.database = []
 
@@ -54,7 +54,7 @@ class Database:
 
     def load(self):
         '''Wrapper for internal read.'''
-        return self._read_db()
+        self.database = self._read_db()
 
     def as_classifier(self):
         '''
@@ -99,6 +99,10 @@ class Database:
         print "\nWriting database to disk..."
         self.save()
         print "Done!"
+
+    def get_size(self):
+        '''Returns current size of database'''
+        return len(self.database)
 
     def _exists(self):
         '''Returns whether the current database exists.'''

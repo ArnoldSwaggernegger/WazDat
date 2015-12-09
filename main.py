@@ -38,9 +38,10 @@ if __name__ == "__main__":
         database.populate(args.train)
 
     if args.f:
-        if database.read:
+        if not database.read:
             print 'Loading database from disk...'
             database.load()
+            print 'Loaded {} entries.'.format(database.get_size())
 
         print 'Converting database to classifier...'
         classifier = database.as_classifier()
