@@ -114,17 +114,26 @@ class Classifier:
             maxindex = np.argmax(histogram)
             coverage = np.sum(histogram[maxindex-1:maxindex+1])
             concentration = float(coverage) / len(fmatches)
-            
-            #if filename == "training/pokemon/441.wav":
-            #    print coverage, concentration
+             
+            """
+            if filename == "training/pokemon/103.wav":
+                x = [b.time for (a, b) in fmatches]
+                y = [a.time for (a, b) in fmatches]
+                plt.scatter(x, y, color="green")
+                ax = plt.gca()
+                ax.set_title("Matching tokens")
+                ax.set_xlabel("time in file B")
+                ax.set_ylabel("time in file A")
+                plt.show() 
                 
-            #if filename == "training/pokemon/441.wav":
-            """width = 0.7 * (bins[1] - bins[0])
-            center = (bins[:-1] + bins[1:]) / 2
-            plt.bar(center, histogram, align='center', width=width)
-            ax = plt.gca()
-            ax.set_title(filename)
-            plt.show()"""
+            if filename == "training/pokemon/103.wav":
+                width = 0.7 * (bins[1] - bins[0])
+                center = (bins[:-1] + bins[1:]) / 2
+                plt.bar(center, histogram, align='center', width=width)
+                ax = plt.gca()
+                ax.set_title(filename)
+                plt.show()
+            """
             
             if coverage > threshold_coverage and concentration > threshold_concentration and (best_match is None or coverage > best_match[1]):
                 best_match = (filename, coverage)

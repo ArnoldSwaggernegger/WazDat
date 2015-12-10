@@ -27,12 +27,12 @@ for i in xrange(n):
         # the translated file has a 1sec offset (10 timesteps)
         x = [e - 16384/1024 for e in x]
     
-    for h in xrange(0, 512, 64):
+    for h in xrange(128, 256, 32):
         ax[i].axhline(y=h, color="grey", alpha=0.25)
     
     plot = ax[i].scatter(x, y, color="red")
-    ax[i].set_xlim((0, 20))
-    ax[i].set_ylim((0, 512))
+    ax[i].set_xlim((0, 23))
+    ax[i].set_ylim((128, 256))
     ax[i].set_ylabel("frequency")
     ax[i].legend([plot], [filename.split("/")[2]], loc="lower right")
 

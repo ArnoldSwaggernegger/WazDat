@@ -83,7 +83,7 @@ def get_spectogram(signal, window_size, bin_size):
     window = zero_padded_window(window_size)
 
     result = np.empty((width, height))
-
+    
     #highpass_filter = np.zeros(height)
     #cutoff_frequency = 100
     #slope = 20
@@ -99,6 +99,8 @@ def get_spectogram(signal, window_size, bin_size):
             for offset in xrange(bin_size):
                 sum += np.abs(spectrum[bin*bin_size+offset])
             result[t][height-bin-1] = sum# * highpass_filter[height-bin-1]
+
+    #show_spectogram(result)
 
     return result
 
@@ -128,6 +130,8 @@ def show_spectogram(spectogram):
     ax = plt.gca()
     ax.set_xlabel("Time")
     ax.set_ylabel("Frequencies")
+    ax.set_ylim((128, 256))
+    ax.set_xlim((0, 23))
     #plt.show()
 
 
@@ -147,14 +151,16 @@ if __name__ == "__main__":
     plt.scatter(time, peaks, color="red")
     plt.show()"""
 
-    signal = soundfiles.load_wav("training/pokemon/430.wav")
-    fingers =  get_fingerprints(signal, 2048, 2)
+    signal = soundfiles.load_wav("training/pokemon/103.wav")
+    fingers = get_fingerprints(signal, 1024, 2)
     time = []
     peaks = []
 
     for t, ps in fingers:
         time  += [t] * len(ps)
         peaks += ps
+
+    print len(peaks)
 
     plt.scatter(time, peaks, color="red")
     plt.show()
