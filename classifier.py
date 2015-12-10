@@ -1,7 +1,8 @@
 '''
-The classifier uses a hashtable based on fingerprint hashes.
-For each possible matched file, check whether the time points between the
-hashes are more or less the same.
+The classifier can match input tokens with a file in the database.
+The classifier uses a dictionary (hashtable) based on fingerprints. 
+When the time between the matching tokens is somewhat constant, a good match 
+is found. 
 '''
 
 
@@ -55,6 +56,11 @@ class Classifier:
         self.tokens = {}
 
     def add_token(self, token):
+        '''
+        This function adds a token to the classifier hashtable. This is done
+        using nested dictionaries (as tuples cannot be keys themselves).
+        '''
+        
         p1, p2, _ = token.fingerprint
 
         if p1 in self.tokens:
@@ -66,7 +72,6 @@ class Classifier:
             self.tokens[p1] = {p2: [token]}
 
     def classify(self, tokens):
-
         '''
         This function classifies a sound using the collected tokens.
         The input tokens should all belong to the same file.
@@ -106,16 +111,22 @@ class Classifier:
             upper_bound = np.ceil(np.max(dt))
             lower_bound = np.floor(np.min(dt))
              
-            """ Create a histogram with binsize 1. The two additional bins at 
-                the edges are to make sure the next step always goes well. """
+            ''' The time differences are collected in a histogram  with binsize
+            of 0.1 sec. '''
             binsize = 0.1
             histogram, bins = np.histogram(dt, bins=np.arange(lower_bound - binsize, upper_bound + 3 * binsize, binsize))
 
+            ''' We find the peak and its neighbours. '''
             maxindex = np.argmax(histogram)
+            
+            ''' Coverage is how much tokens the peak covers. Concentration is
+            how many percent of the matches are part of the peak. ''' 
             coverage = np.sum(histogram[maxindex-1:maxindex+1])
             concentration = float(coverage) / len(fmatches)
              
             """
+            # This block can plot the matching tokens in the time domains of the
+            # two files
             if filename == "training/pokemon/103.wav":
                 x = [b.time for (a, b) in fmatches]
                 y = [a.time for (a, b) in fmatches]
@@ -125,7 +136,8 @@ class Classifier:
                 ax.set_xlabel("time in file B")
                 ax.set_ylabel("time in file A")
                 plt.show() 
-                
+            
+            # This block can plot the histogram of the time difference per token
             if filename == "training/pokemon/103.wav":
                 width = 0.7 * (bins[1] - bins[0])
                 center = (bins[:-1] + bins[1:]) / 2
@@ -135,6 +147,8 @@ class Classifier:
                 plt.show()
             """
             
+            ''' Filter low concentration and coverage. Keep the filename with 
+            the highest coverage. '''
             if coverage > threshold_coverage and concentration > threshold_concentration and (best_match is None or coverage > best_match[1]):
                 best_match = (filename, coverage)
                     

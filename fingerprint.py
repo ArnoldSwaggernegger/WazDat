@@ -47,14 +47,12 @@ def get_fingerprints(signal, window_size, bin_size):
         peaks = get_peaks(histogram - prev_histogram - 25)
         result.append((time, peaks))
 
-        #TODO: Implement something like in the 3rd article with a guassian blur at peaks
         prev_histogram = np.zeros(width)
         for peak in peaks:
             prev_histogram[peak-1:peak+1] = histogram[peak-1:peak+1]
         prev_histogram = gaussian_filter(prev_histogram, 2.)
         prev_histogram *= 1#np.sum(histogram) / 50.0
 
-    #show_spectogram(time_samples)
     return result
 
 
@@ -100,32 +98,23 @@ def get_spectogram(signal, window_size, bin_size):
                 sum += np.abs(spectrum[bin*bin_size+offset])
             result[t][height-bin-1] = sum# * highpass_filter[height-bin-1]
 
-    #show_spectogram(result)
-
     return result
 
 
 def zero_padded_window(size):
-    '''
-    '''
     return np.ones(size)
 
 
 def hanning_window(length, index, size):
-    '''
-    '''
+
     return None
 
 
 def hamming_window(length, index, size):
-    '''
-    '''
     return None
 
 
 def show_spectogram(spectogram):
-    '''
-    '''
     plt.imshow(spectogram.T, aspect="auto", interpolation="none")
     ax = plt.gca()
     ax.set_xlabel("Time")
@@ -137,19 +126,6 @@ def show_spectogram(spectogram):
 
 if __name__ == "__main__":
     import soundfiles
-
-    """signal = soundfiles.load_wav("training/track01_ijsvogel.wav")    
-    
-    fingers =  get_fingerprints(signal, 2048, 8)
-    time = []
-    peaks = []
-
-    for t, ps in fingers:
-        time  += [t] * len(ps)
-        peaks += ps
-
-    plt.scatter(time, peaks, color="red")
-    plt.show()"""
 
     signal = soundfiles.load_wav("training/pokemon/103.wav")
     fingers = get_fingerprints(signal, 1024, 2)

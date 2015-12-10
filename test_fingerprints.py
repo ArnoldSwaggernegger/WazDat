@@ -1,3 +1,8 @@
+'''
+This program can calculate and show the fingerprints of a list of files to 
+compare them.
+'''
+
 import fingerprint
 import soundfiles
 import matplotlib.pyplot as plt
@@ -24,7 +29,6 @@ for i in xrange(n):
     y = [freq for (time, peaks) in fingerprints for freq in peaks]
     
     if "translated" in filename:
-        # the translated file has a 1sec offset (10 timesteps)
         x = [e - 16384/1024 for e in x]
     
     for h in xrange(128, 256, 32):

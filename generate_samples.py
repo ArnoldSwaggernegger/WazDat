@@ -1,3 +1,7 @@
+'''
+This program generates random testcases from the pokemon sounds.
+'''
+
 import soundfiles
 import random
 import matplotlib.pyplot as plt
