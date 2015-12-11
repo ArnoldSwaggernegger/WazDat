@@ -57,6 +57,7 @@ print "{} correct".format(correct_match)
 
 """
 # This block prints the number of correct/wrong for each possible distortion 
+
 print "\n{} offset not matched".format(no_matches.count("offset"))
 print "{} offset wrong".format(wrong_matches.count("offset"))
 print "{} offset correct".format(correct_matches.count("offset"))
@@ -70,6 +71,7 @@ print "{} amp wrong".format(wrong_matches.count("amp"))
 print "{} amp correct".format(correct_matches.count("amp"))
 """
 
+""" Plot a pie chart. """
 plt.pie([correct_match, no_match, wrong_match], labels=["Correct match", "No match", "Wrong match"], colors=["yellowgreen", "yellow", "red"], startangle=90, shadow=False)
 plt.axis('equal')
 plt.show()  

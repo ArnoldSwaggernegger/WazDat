@@ -1,3 +1,7 @@
+'''
+This file tests the loading of wav files.
+'''
+
 import soundfiles
 import fingerprint
 import numpy as np
@@ -28,7 +32,7 @@ plt.title("original")
 plt.scatter(time, peaks, color="red")
 '''
 
-signal = soundfiles.load_wav("audio/pokemon/003-divided.wav")
+signal = soundfiles.load_wav("audio/presentatie/003-divided.wav")
 
 x = []
 for i in signal:
@@ -53,7 +57,7 @@ plt.title("amplified")
 plt.scatter(time, peaks, color="red")
 '''
 
-signal = soundfiles.load_wav("audio/pokemon/003-translated.wav")
+signal = soundfiles.load_wav("audio/presentatie/003-translated.wav")
 
 x = []
 for i in signal:
@@ -61,7 +65,7 @@ for i in signal:
 
 plt.subplot(413)
 plt.title("offset")
-plt.xlim(20480,40480)
+plt.xlim(16384, 16384 + 16000)
 plt.ylim(-1,1)
 plt.plot(x)
 
@@ -79,7 +83,7 @@ plt.title("offset")
 plt.scatter(time, peaks, color="red")
 '''
 
-signal = soundfiles.load_wav("audio/pokemon/003-noise.wav")
+signal = soundfiles.load_wav("audio/presentatie/003-noise.wav")
 
 x = []
 for i in signal:

@@ -29,7 +29,8 @@ for i in xrange(n):
     y = [freq for (time, peaks) in fingerprints for freq in peaks]
     
     if "translated" in filename:
-        x = [e - 16384/1024 for e in x]
+        shift = 16384/1024
+        x = [e - shift for e in x]
     
     for h in xrange(128, 256, 32):
         ax[i].axhline(y=h, color="grey", alpha=0.25)
