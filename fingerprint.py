@@ -19,6 +19,8 @@ def get_tokens(signal, window_size=1024, bin_size=2):
     leftoffset = 1
     width = 4
     height = 16
+   
+    ''' Create tokens using the anchor point method. '''
     
     for time, peaks in fingerprints:
         realtime = time * float(window_size) / signal.get_samplerate()
@@ -51,7 +53,7 @@ def get_fingerprints(signal, window_size, bin_size):
         for peak in peaks:
             prev_histogram[peak-1:peak+1] = histogram[peak-1:peak+1]
         prev_histogram = gaussian_filter(prev_histogram, 2.)
-        prev_histogram *= 1#np.sum(histogram) / 50.0
+        prev_histogram *= 1 # np.sum(histogram) / 50.0
 
     return result
 
@@ -69,7 +71,6 @@ def get_peaks(histogram):
         if peak[1] > 0 and peak[1] > 0.5 * peaks[0][1]:
             result.append(peak[0])
     return result
-    #return [peak[0] for peak in peaks[:5]]
 
 
 def get_spectogram(signal, window_size, bin_size):
@@ -96,7 +97,7 @@ def get_spectogram(signal, window_size, bin_size):
             sum = 0.0
             for offset in xrange(bin_size):
                 sum += np.abs(spectrum[bin*bin_size+offset])
-            result[t][height-bin-1] = sum# * highpass_filter[height-bin-1]
+            result[t][height-bin-1] = sum # * highpass_filter[height-bin-1]
 
     return result
 
@@ -121,7 +122,7 @@ def show_spectogram(spectogram):
     ax.set_ylabel("Frequencies")
     ax.set_ylim((128, 256))
     ax.set_xlim((0, 23))
-    #plt.show()
+    plt.show()
 
 
 if __name__ == "__main__":

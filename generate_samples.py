@@ -45,19 +45,15 @@ for f in files:
 		'''
 		offset = int(random.random() * 16384)
 		new_samples = np.append(np.zeros(offset), (new_samples))
-
 		suffix += "-offset"
 	
-	'''
-	convert to string
-	'''
+	''' The new data is converted to string and written to a new file. '''
 	new_samples = (new_samples * 2**31).astype(np.int32).tostring()
 
 	dest = f.replace("training","audio")
 	dest = dest.split(".")[0] + suffix + "." + dest.split(".")[1]
 	
 	wav = wave.open(dest,'w')
-	
 	wav.setparams((1, 4, signal.samplerate, len(new_samples), 'NONE', 'not defined'))
-
 	wav.writeframesraw(new_samples)
+	wav.close()

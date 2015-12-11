@@ -1,3 +1,8 @@
+'''
+This class contains some basic color codes using in main.py to print progress.
+'''
+
+
 import sys
 
 
